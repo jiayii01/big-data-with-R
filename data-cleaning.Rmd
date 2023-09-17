@@ -7,5 +7,47 @@ date: "2023-09-17"
 # IMPORTING PACKAGES
 ```{r}
 library(dplyr)
+library(arrow)
 ```
 
+# CONVERTING CSV TO PARQUET
+```{r}
+# change if yours isn't stored here
+csv_path = "../US_Accidents_March23.csv"
+
+us_accidents_csv <- open_dataset(
+  sources = csv_path,
+  col_types = schema(ISBN=string()),
+  format = "csv"
+)
+
+# getting a glimpse of CSV file data
+glimpse(us_accidents_csv)
+
+# grouping my severity
+us_accidents_csv |> 
+  group_by(Severity) |>
+  summarise(Severity_Counts = n()) |>
+  arrange(Severity_Counts) |>
+  collect()
+
+# removing columns that might not be important to our analysis
+us_accidents_csv_cleaned <- us_accidents_csv |>
+  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng))
+
+parquet_path <- "data/us_accidents"
+
+## there's an error here for now
+# writing csv to parquet
+us_accidents_csv_cleaned |> write_dataset(
+  path = parquet_path,
+  format = "parquet"
+)
+
+# opening parquet dataset of US accidents
+us_accidents_parquet <- open_dataset(
+  sources = parquet_path,
+  format = "parquet"
+)
+
+```
