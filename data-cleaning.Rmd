@@ -8,6 +8,8 @@ date: "2023-09-17"
 ```{r}
 library(dplyr)
 library(arrow)
+library(tidyverse)
+library(sparklyr)
 ```
 
 # CONVERTING CSV TO PARQUET
@@ -24,16 +26,14 @@ us_accidents_csv <- open_dataset(
 # getting a glimpse of CSV file data
 glimpse(us_accidents_csv)
 
-# grouping my severity
-us_accidents_csv |> 
-  group_by(Severity) |>
-  summarise(Severity_Counts = n()) |>
-  arrange(Severity_Counts) |>
-  collect()
-
 # removing columns that might not be important to our analysis
-us_accidents_csv_cleaned <- us_accidents_csv |>
-  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng))
+# removing columns that might not be important to our analysis and omiting rows with NA
+ 
+us_accidents_cleaned <- us_accidents_csv |>
+  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Start_Time, End_Time, Description, Timezone, Zipcode, Country, Street, Source)) |> na.omit()
+
+# getting a glimpse of cleaned CSV file data
+glimpse(us_accidents_cleaned)
 
 parquet_path <- "data/us_accidents"
 
@@ -43,11 +43,73 @@ us_accidents_csv_cleaned |> write_dataset(
   path = parquet_path,
   format = "parquet"
 )
-
-# opening parquet dataset of US accidents
-us_accidents_parquet <- open_dataset(
-  sources = parquet_path,
-  format = "parquet"
-)
-
 ```
+
+# DATA TRANSFORMATION
+```{r}
+library(doParallel)
+registerDoParallel(cores = detectCores() - 1)
+sc <- spark_connect(master = "local", version = "3.4.0")
+
+# reading parquet file into spark 
+us_accidents <- spark_read_parquet(sc, path = parquet_path, as_tibble = TRUE)
+ 
+head(us_accidents)
+# grouping by severity
+ 
+# grouping my severity
+us_accidents_csv |> 
+  group_by(Severity) |>
+  summarise(Severity_Counts = n()) |>
+  arrange(Severity_Counts) |>
+  collect()
+ 
+# glimpse
+glimpse(us_accidents)
+n <- count(us_accidents); n
+ 
+get_time <-function (time){
+  hours <- hour(time)
+    #   output <- ""
+    #   if ((hours < 12) & (hours >= 5)) {
+    #    output <- "morning"
+    # } else if ((hours < 18) & (hours >= 12)) {
+    #    output <- "afternoon"
+    # } else if ((hours < 21) & (hours >= 18)) {
+    #    output <- "evening"
+    # } else{
+    #    output <- "night"
+    #  }
+      return <- hours
+    }
+
+# system.time({
+
+#   forecasts <- foreach (i = T:(N-1), .combine = "rbind") %dopar% {
+ 
+#     us_accidents[(i+1-T)] <- predict_HAR(daily_RV[1:i, ], scheme = "OLS")
+#   }
+ 
+# })
+ 
+system.time(
+results <- foreach(i = 1:7728394, .combine = "rbind") %dopar% {
+  us_accidents[i] <- get_time(us_accidents[i, "Weather_Timestamp"])
+})
+
+config <- spark_config()
+config$spark.sql.execution.arrow.maxRecordsPerBatch <- 1000 * 10^3
+config$spark.executor.cores <- 7
+config$spark.executor.memory <- "16G"
+config$spark.memory.offHeap.enabled <- TRUE
+config$spark.driver.memory <- "5G"
+config$`sparklyr.cores.local` <- 7
+config$`sparklyr.shell.driver-memory` <- "16G"
+config$spark.memory.fraction <- 0.9
+```
+
+# DISCONNECTING FROM LOCAL CLUSTER
+```{r}
+spark_disconnect(sc)
+```
+```{r}
