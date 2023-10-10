@@ -1,0 +1,23 @@
+---
+title: "data-cleaning-2"
+output: html_document
+date: "2023-10-10"
+---
+
+# IMPORTING PACKAGES
+```{r}
+library(dplyr)
+library(arrow)
+library(tidyverse)
+library(sparklyr)
+```
+
+# EDA
+```{r}
+sc <- spark_connect(master = "local", version = "3.4.0")
+
+accidents <- spark_read_parquet(sc, path = "data/us_accidents")
+
+# DISCONNECT 
+spark_disconnect(sc)
+```
