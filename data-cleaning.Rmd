@@ -1,7 +1,7 @@
 ---
-title: "data-cleaning"
+title: "data-cleaning-2"
 output: html_document
-date: "2023-09-17"
+date: "2023-10-10"
 ---
 
 # IMPORTING PACKAGES
@@ -12,104 +12,37 @@ library(tidyverse)
 library(sparklyr)
 ```
 
-# CONVERTING CSV TO PARQUET
+# DATA WRANGLING
 ```{r}
-# change if yours isn't stored here
+sc <- spark_connect(master = "local", version = "3.4.0")
 csv_path = "../US_Accidents_March23.csv"
 
-us_accidents_csv <- open_dataset(
-  sources = csv_path,
-  col_types = schema(ISBN=string()),
-  format = "csv"
+accidents <- spark_read_csv(
+  sc, 
+  name = "accidents",
+  path = csv_path
 )
 
-# getting a glimpse of CSV file data
-glimpse(us_accidents_csv)
-
-# removing columns that might not be important to our analysis
-# removing columns that might not be important to our analysis and omiting rows with NA
- 
-us_accidents_cleaned <- us_accidents_csv |>
-  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Start_Time, End_Time, Description, Timezone, Zipcode, Country, Street, Source)) |> na.omit()
-
-# getting a glimpse of cleaned CSV file data
+# DATA CLEANING
+us_accidents_cleaned <- accidents |> 
+  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Description, Timezone, Zipcode, Country, Street, Source)) |>
+  na.omit() |>
+  filter(year(Weather_Timestamp) == 2022) |>
+  mutate(StartHr = hour(Start_Time),
+         WkDay = date_format(Start_Time, "E"),
+         Duration = (End_Time - Start_Time),
+         `Temperature(C)` = round((TemperatureF - 32) * (5/9),1),
+         `Wind_Chill(C)` = round((Wind_ChillF - 32) * (5/9), 1)
+         )
 glimpse(us_accidents_cleaned)
 
+# WRITE TO PARQUET
 parquet_path <- "data/us_accidents"
-
-## there's an error here for now
-# writing csv to parquet
-us_accidents_csv_cleaned |> write_dataset(
+us_accidents_cleaned |> spark_write_parquet(
   path = parquet_path,
-  format = "parquet"
+  mode = "overwrite"
 )
-```
 
-# DATA TRANSFORMATION
-```{r}
-library(doParallel)
-registerDoParallel(cores = detectCores() - 1)
-sc <- spark_connect(master = "local", version = "3.4.0")
-
-# reading parquet file into spark 
-us_accidents <- spark_read_parquet(sc, path = parquet_path, as_tibble = TRUE)
- 
-head(us_accidents)
-# grouping by severity
- 
-# grouping my severity
-us_accidents_csv |> 
-  group_by(Severity) |>
-  summarise(Severity_Counts = n()) |>
-  arrange(Severity_Counts) |>
-  collect()
- 
-# glimpse
-glimpse(us_accidents)
-n <- count(us_accidents); n
- 
-get_time <-function (time){
-  hours <- hour(time)
-    #   output <- ""
-    #   if ((hours < 12) & (hours >= 5)) {
-    #    output <- "morning"
-    # } else if ((hours < 18) & (hours >= 12)) {
-    #    output <- "afternoon"
-    # } else if ((hours < 21) & (hours >= 18)) {
-    #    output <- "evening"
-    # } else{
-    #    output <- "night"
-    #  }
-      return <- hours
-    }
-
-# system.time({
-
-#   forecasts <- foreach (i = T:(N-1), .combine = "rbind") %dopar% {
- 
-#     us_accidents[(i+1-T)] <- predict_HAR(daily_RV[1:i, ], scheme = "OLS")
-#   }
- 
-# })
- 
-system.time(
-results <- foreach(i = 1:7728394, .combine = "rbind") %dopar% {
-  us_accidents[i] <- get_time(us_accidents[i, "Weather_Timestamp"])
-})
-
-config <- spark_config()
-config$spark.sql.execution.arrow.maxRecordsPerBatch <- 1000 * 10^3
-config$spark.executor.cores <- 7
-config$spark.executor.memory <- "16G"
-config$spark.memory.offHeap.enabled <- TRUE
-config$spark.driver.memory <- "5G"
-config$`sparklyr.cores.local` <- 7
-config$`sparklyr.shell.driver-memory` <- "16G"
-config$spark.memory.fraction <- 0.9
-```
-
-# DISCONNECTING FROM LOCAL CLUSTER
-```{r}
+# DISCONNECT 
 spark_disconnect(sc)
 ```
-```{r}
