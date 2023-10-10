@@ -32,7 +32,12 @@ us_accidents_cleaned <- accidents |>
          WkDay = date_format(Start_Time, "E"),
          Duration = (End_Time - Start_Time),
          `Temperature(C)` = round((TemperatureF - 32) * (5/9),1),
-         `Wind_Chill(C)` = round((Wind_ChillF - 32) * (5/9), 1)
+         `Wind_Chill(C)` = round((Wind_ChillF - 32) * (5/9), 1),
+          TimeOfDay = case_when((StartHr < 12) & (StartHr >= 5) ~ 'Morning',
+                                (StartHr < 18) & (StartHr >= 12) ~ 'Afternoon',
+                                (StartHr < 21) & (StartHr >= 18) ~ 'Evening',
+                                TRUE ~ 'Night'
+                                )
          )
 glimpse(us_accidents_cleaned)
 
