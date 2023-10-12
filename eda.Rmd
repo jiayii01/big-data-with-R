@@ -10,14 +10,140 @@ library(dplyr)
 library(arrow)
 library(tidyverse)
 library(sparklyr)
+library(dbplot)
 ```
 
 # EDA
+
+## Connect to spark and load accidents data
 ```{r}
+# CONNECT
 sc <- spark_connect(master = "local", version = "3.4.0")
 
 accidents <- spark_read_parquet(sc, path = "data/us_accidents")
 
+glimpse(accidents)
+head(accidents)
+```
+
+## Distribution of Severity
+```{r}
+grouped_severity <- accidents |>
+  group_by(Severity) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_severity |> 
+  mutate(Severity = as.factor(Severity), # Specify Severity to be factor (categorical)  
+         Severity = reorder(Severity, desc(Count))) |> # Reorder in descending Count
+  ggplot(aes(x = Severity, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) +
+  labs(title = "Distribution of Accidents by Severity")
+```
+Majority of the accidents are of severity 2. If we are classifying Severity we might need to perform some resampling.
+
+## Number of Accidents by Time of Day
+```{r}
+grouped_tod <- accidents |>
+  group_by(TimeOfDay) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_tod |> 
+  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  
+         TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = TimeOfDay, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Distribution of Accidents by Time of Day")
+```
+Surprisingly there are more accidents in the day.
+
+## Top 5 Weather Conditions
+```{r}
+top_5_weather <- accidents |>
+  group_by(Weather_Condition) |>
+  summarise(Count = n()) |>
+  slice_max(order_by = Count, n = 5, with_ties = FALSE) |>
+  collect()
+
+# Visualize with Spark
+top_5_weather |> 
+  mutate(Weather_Condition = as.factor(Weather_Condition),
+         Weather_Condition = reorder(Weather_Condition, desc(Count))) |>
+  ggplot(aes(x = Weather_Condition, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Top 5 Weather Conditions")
+```
+
+## Explore the distribution of Visibilitymi
+```{r}
+grouped_vis <- accidents |>
+  group_by(Visibilitymi) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_vis |> 
+  mutate(Visibilitymi = as.factor(Visibilitymi), # Specify Visibilitymi to be factor (categorical)  
+         Visibilitymi = reorder(Visibilitymi, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibilitymi, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Distribution of Accidents by Visibilitymi")
+```
+
+## Exploring the more severe accidents
+```{r}
+severe_accidents <- accidents |>
+  filter(Severity > 2)
+
+# Time of day for severe accidents
+grouped_tod <- severe_accidents |>
+  group_by(TimeOfDay) |>
+  summarise(Count = n()) |>
+  collect()
+
+grouped_tod |> 
+  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  
+         TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = TimeOfDay, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Distribution of Accidents by Time of Day")
+
+# Weather conditions for severe accidents
+top_5_weather <- severe_accidents |>
+  group_by(Weather_Condition) |>
+  summarise(Count = n()) |>
+  slice_max(order_by = Count, n = 5, with_ties = FALSE) |>
+  collect()
+
+top_5_weather |> 
+  mutate(Weather_Condition = as.factor(Weather_Condition),
+         Weather_Condition = reorder(Weather_Condition, desc(Count))) |>
+  ggplot(aes(x = Weather_Condition, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Top 5 Weather Conditions for Severe Accidents")
+
+# Distribution of Visibilitymi
+grouped_vis <- severe_accidents |>
+  group_by(Visibilitymi) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_vis |> 
+  mutate(Visibilitymi = as.factor(Visibilitymi), # Specify Visibilitymi to be factor (categorical)  
+         Visibilitymi = reorder(Visibilitymi, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibilitymi, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Distribution of Accidents by Visibilitymi for Severe Accidents")
+```
+Distribution of variables are similar despite filtering for more severe accidents.
+
+## Disconnect
+```{r}
 # DISCONNECT 
 spark_disconnect(sc)
 ```
+
