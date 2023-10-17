@@ -1,0 +1,127 @@
+---
+title: "eda_paul"
+output: html_document
+date: "2023-10-16"
+---
+
+# IMPORTING PACKAGES
+```{r}
+library(dplyr)
+library(arrow)
+library(tidyverse)
+library(sparklyr)
+library(dbplot)
+library(ggplot2)
+```
+
+# EDA
+
+## Connect to spark and load accidents data
+```{r}
+# CONNECT
+sc <- spark_connect(master = "local", version = "3.4.0")
+
+accidents <- spark_read_parquet(sc, path = "data/us_accidents")
+
+head(accidents)
+```
+
+## Split Data for Training and Testing (did not use this)
+```{r}
+accidents_split <- accidents |>
+  sdf_random_split(training = 0.8, testing = 0.2, seed = 1234)
+accidents_train <- okc_split$training
+accidents_test <- okc_split$testing
+```
+
+## Scatter Plot Distance Accidents
+```{r}
+
+# Filter accidents with distance 0 (too many)
+filtered_accidents <- accidents %>%
+  filter(Distancemi > 0)
+
+grouped_distancemi <- filtered_accidents |>
+  group_by(Distancemi) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Create Scatter Plot
+grouped_distancemi %>%
+  ggplot(aes(x = Distancemi, y = Count)) +
+  geom_point() +
+  labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents")
+```
+
+## Temperature
+```{r}
+grouped_temp <- accidents |>
+  group_by(`Temperature(C)`) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_temp |> 
+  ggplot(aes(x = `Temperature(C)`, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Distribution of Accidents Temperature")
+```
+
+## Accidents by Weekday (descending)
+```{r}
+grouped_WkDay <- accidents |>
+  group_by(WkDay) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Descending order
+grouped_WkDay$WkDay <- factor(grouped_WkDay$WkDay, levels = grouped_WkDay$WkDay[order(grouped_WkDay$Count, decreasing = TRUE)])
+
+# Visualize with Spark
+grouped_WkDay |> 
+  ggplot(aes(x = WkDay, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.4) + 
+  labs(title = "Distribution of Accidents Weekday")
+```
+
+## Crosstab of Weekday and Time of Day
+```{r}
+# Crosstab with WkDay and TimeOfDay
+crosstab_Day_Time <- accidents |>
+  sdf_crosstab("WkDay", "TimeOfDay")
+
+crosstab_Day_Time
+```
+
+## Crosstab of Severity and Windspeed
+```{r}
+# Crosstab with Severity and Windspeed
+crosstab_Severity_Wind <- accidents |>
+  sdf_crosstab("Severity", "Wind_Speedmph")
+
+crosstab_Severity_Wind
+```
+
+## Overview
+```{r}
+accidents |>
+  sdf_describe(cols = c("Distancemi", "WkDay"))
+```
+
+```{r}
+prop_data <- accidents |>
+  group_by(Distancemi, Severity) |>
+  summarize(n = n()) |>
+  group_by(Severity) |>
+  summarize(count = sum(n), dis = sum(Distancemi * n) / sum(n)) |> 
+  mutate(se = sqrt(dis * (1-dis) / count)) |>
+  collect() 
+
+prop_data
+```
+
+## Disconnect
+```{r}
+# DISCONNECT 
+spark_disconnect(sc)
+```
