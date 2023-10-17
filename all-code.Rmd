@@ -339,6 +339,11 @@ balanced_accident <- ovun.sample(Severity_Group~., data=accidents_train,
                                   method="over")$data
 ```
 
+## TODO: standardising numerical data
+```{r}
+
+```
+
 ## Model Building
 ### Logistic Regression
 ```{r}
