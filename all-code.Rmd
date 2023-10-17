@@ -1,0 +1,360 @@
+---
+title: "all-code"
+output: html_document
+date: "2023-10-10"
+---
+
+# IMPORTING PACKAGES
+```{r}
+library(dplyr)
+library(arrow)
+library(tidyverse)
+library(sparklyr)
+library(dbplot)
+library(ROSE)
+seed_num <- 1234
+```
+
+# DATA WRANGLING
+```{r}
+sc <- spark_connect(master = "local", version = "3.4.0")
+csv_path = "../US_Accidents_March23.csv"
+
+accidents <- spark_read_csv(
+  sc, 
+  name = "accidents",
+  path = csv_path
+)
+
+# DATA CLEANING
+us_accidents_cleaned <- accidents |> 
+  # remove columns that are not important
+  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Description, Timezone, Zipcode, Country, Street, Source, City, County, Airport_Code, Civil_Twilight, Nautical_Twilight, Astronomical_Twilight, Wind_Direction)) |>
+  na.omit() |>
+  # looking only at 2022 accidents
+  filter(year(Weather_Timestamp) == 2022) |>
+  mutate(StartHr = hour(Start_Time),
+         DayOfWk = date_format(Start_Time, "E"),
+         Duration = (End_Time - Start_Time),
+         `Temperature(C)` = round((TemperatureF - 32) * (5/9),1),
+         `Wind_Chill(C)` = round((Wind_ChillF - 32) * (5/9), 1),
+          TimeOfDay = case_when((StartHr < 12) & (StartHr >= 6) ~ 'Morning',
+                                (StartHr < 18) & (StartHr >= 12) ~ 'Afternoon',
+                                (StartHr < 21) & (StartHr >= 18) ~ 'Evening',
+                                TRUE ~ 'Night'
+                                )
+         ) |>
+  select(-c(TemperatureF, Wind_ChillF)) |>
+  # filter out accidents with distance 0
+  filter(Distancemi > 0)
+glimpse(us_accidents_cleaned)
+
+# WRITE TO PARQUET
+parquet_path <- "data/us_accidents"
+us_accidents_cleaned |> spark_write_parquet(
+  path = parquet_path,
+  mode = "overwrite"
+)
+```
+
+# EDA
+## Load accidents data in parquet format
+```{r}
+# READING PARQUET
+accidents <- spark_read_parquet(sc, path = "data/us_accidents")
+glimpse(accidents)
+```
+
+## Distribution of accidents by State
+```{r}
+grouped_state <- accidents |>
+  group_by(State) |>
+  summarise(Count = n()) |>
+  mutate(Count = as.numeric(Count)) |>
+  arrange(desc(Count)) |>
+  head(10) |>
+  collect()
+
+# Visualize with Spark
+grouped_state |> 
+  ggplot(aes(reorder(State, desc(Count)), Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) +
+  labs(title = "Top 10 States with Most Accidents") + 
+  coord_flip()
+```
+
+## Distribution of Severity
+```{r}
+grouped_severity <- accidents |>
+  group_by(Severity) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_severity |> 
+  mutate(Severity = as.factor(Severity), # Specify Severity to be factor (categorical)  
+         Severity = reorder(Severity, desc(Count))) |> # Reorder in descending Count
+  ggplot(aes(x = Severity, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) +
+  labs(title = "Distribution of Accidents by Severity")
+```
+Majority of the accidents are of severity 2. If we are classifying Severity we might need to perform some resampling.
+
+## Number of Accidents by Time of Day
+```{r}
+grouped_tod <- accidents |>
+  group_by(TimeOfDay) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_tod |> 
+  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  
+         TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = TimeOfDay, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accidents by Time of Day")
+```
+Surprisingly there are more accidents in the day.
+
+## Top 5 Weather Conditions
+```{r}
+top_5_weather <- accidents |>
+  group_by(Weather_Condition) |>
+  summarise(Count = n()) |>
+  slice_max(order_by = Count, n = 5, with_ties = FALSE) |>
+  collect()
+
+# Visualize with Spark
+top_5_weather |> 
+  mutate(Weather_Condition = as.factor(Weather_Condition),
+         Weather_Condition = reorder(Weather_Condition, desc(Count))) |>
+  ggplot(aes(x = Weather_Condition, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Top 5 Weather Conditions")
+```
+
+## Explore the distribution of Visibilitymi
+```{r}
+grouped_vis <- accidents |>
+  group_by(Visibilitymi) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_vis |> 
+  mutate(Visibilitymi = as.factor(Visibilitymi), # Specify Visibilitymi to be factor (categorical)  
+         Visibilitymi = reorder(Visibilitymi, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibilitymi, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accidents by Visibilitymi")
+```
+
+## Scatter Plot Distance Accidents
+```{r}
+grouped_distancemi <- accidents |>
+  group_by(Distancemi) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Create Scatter Plot
+grouped_distancemi |>
+  ggplot(aes(x = Distancemi, y = Count)) +
+  geom_point() +
+  labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents")
+```
+
+## Temperature
+```{r}
+grouped_temp <- accidents |>
+  group_by(`Temperature(C)`) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_temp |> 
+  ggplot(aes(x = `Temperature(C)`, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accident's Temperature")
+```
+
+## Accidents by Day of Week (descending)
+```{r}
+grouped_DayOfWk <- accidents |>
+  group_by(DayOfWk) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Descending order
+grouped_DayOfWk$DayOfWk <- factor(grouped_DayOfWk$DayOfWk, levels = grouped_DayOfWk$DayOfWk[order(grouped_DayOfWk$Count, decreasing = TRUE)])
+
+# Visualize with Spark
+grouped_DayOfWk |> 
+  ggplot(aes(x = DayOfWk, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accidents Weekday")
+```
+
+## Exploring the more severe accidents
+```{r}
+severe_accidents <- accidents |>
+  filter(Severity > 2)
+
+# Time of day for severe accidents
+grouped_tod <- severe_accidents |>
+  group_by(TimeOfDay) |>
+  summarise(Count = n()) |>
+  collect()
+
+grouped_tod |> 
+  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  
+         TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = TimeOfDay, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Severe Accidents by Time of Day")
+
+# Weather conditions for severe accidents
+top_5_weather <- severe_accidents |>
+  group_by(Weather_Condition) |>
+  summarise(Count = n()) |>
+  slice_max(order_by = Count, n = 5, with_ties = FALSE) |>
+  collect()
+
+top_5_weather |> 
+  mutate(Weather_Condition = as.factor(Weather_Condition),
+         Weather_Condition = reorder(Weather_Condition, desc(Count))) |>
+  ggplot(aes(x = Weather_Condition, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Top 5 Weather Conditions for Severe Accidents")
+
+# Distribution of Visibilitymi
+grouped_vis <- severe_accidents |>
+  group_by(Visibilitymi) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_vis |> 
+  mutate(Visibilitymi = as.factor(Visibilitymi), # Specify Visibilitymi to be factor (categorical)  
+         Visibilitymi = reorder(Visibilitymi, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibilitymi, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accidents by Visibilitymi for Severe Accidents")
+```
+Distribution of variables are similar despite filtering for more severe accidents.
+
+## Crosstab of Weekday and Time of Day
+```{r}
+# Crosstab with DayOfWk and TimeOfDay
+crosstab_Day_Time <- accidents |>
+  sdf_crosstab("DayOfWk", "TimeOfDay")
+
+crosstab_Day_Time
+```
+
+## Crosstab of Severity and Windspeed
+```{r}
+# Crosstab with Severity and Windspeed
+crosstab_Severity_Wind <- accidents |>
+  sdf_crosstab("Severity", "Wind_Speedmph")
+
+crosstab_Severity_Wind
+```
+
+## Crosstab of Severity and Weather_Condition
+```{r}
+# Crosstab with Severity and Weather_Condition
+crosstab_Severity_Weather_Condition <- accidents |>
+  sdf_crosstab("Severity", "Weather_Condition")
+
+crosstab_Severity_Weather_Condition
+```
+
+## Crosstab of Severity and TimeOfDay
+```{r}
+# Crosstab with Severity and TimeOfDay
+crosstab_Severity_TimeOfDay <- accidents |>
+  sdf_crosstab("Severity", "TimeOfDay")
+
+crosstab_Severity_TimeOfDay
+```
+
+## Summary statistics for Severity and Distancemi 
+```{r}
+# Summary statistics for Severity and Distancemi
+accidents |>
+  sdf_describe(cols = c("Severity", "Distancemi"))
+```
+
+## Summary statistics for Distancemi and DayOfWk 
+```{r}
+# Summary statistics for Distancemi and DayOfWk
+accidents |>
+  sdf_describe(cols = c("Distancemi", "DayOfWk"))
+```
+
+```{r}
+# Relationship between Severity and Distancemi
+prop_data <- accidents |>
+  group_by(Distancemi, Severity) |>
+  summarize(n = n()) |>
+  group_by(Severity) |>
+  summarize(count = sum(n), dis = sum(Distancemi * n) / sum(n)) |> 
+  mutate(se = sqrt(dis * (1-dis) / count)) |>
+  collect() 
+
+prop_data
+```
+
+# MODELLING
+## Regrouping Data Severity
+```{r}
+accidents <- accidents |>
+  mutate(Severity_Group = case_when((Severity == 1) | (Severity == 2) ~ 'Not Severe',
+                                (Severity == 3) | (Severity == 4) ~ 'Severe'
+                                ))
+```
+
+## Split Data for Training and Testing
+```{r}
+accidents_split <- accidents |>
+  sdf_random_split(training = 0.8, testing = 0.2, seed = seed_num)
+accidents_train <- accidents_split$training
+accidents_test <- accidents_split$testing
+
+accidents_train |>
+  count(Severity_Group) |>
+  mutate(prop = n / sum(n, na.rm = T))
+
+accidents_test |>
+  count(Severity_Group) |>
+  mutate(prop = n / sum(n, na.rm = T))
+```
+
+## Balancing Data
+```{r}
+## there's an error now
+balanced_accident <- ovun.sample(Severity_Group~., data=accidents_train, 
+                                  p=0.5, seed=1, 
+                                  method="over")$data
+```
+
+## Model Building
+### Logistic Regression
+```{r}
+lr_model <- accidents_train |>
+  ml_logistic_regression(formula = Severity_Group~.)
+
+lr_model$coefficients
+
+lr_pred <- ml_predict(lr_model, accidents_test)
+
+### there's an error will edit
+ml_binary_classification_evaluator(pred)
+table(pull(lr_pred, label), pull(lr_pred, prediction))
+```
+
+# DISCONNECT
+```{r}
+spark_disconnect(sc)
+```
