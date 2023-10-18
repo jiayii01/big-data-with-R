@@ -11,13 +11,14 @@ library(arrow)
 library(tidyverse)
 library(sparklyr)
 library(dbplot)
+library(corrr)
 library(ROSE)
 seed_num <- 1234
+sc <- spark_connect(master = "local", version = "3.4.0")
 ```
 
 # DATA WRANGLING
 ```{r}
-sc <- spark_connect(master = "local", version = "3.4.0")
 csv_path = "../US_Accidents_March23.csv"
 
 accidents <- spark_read_csv(
@@ -60,7 +61,7 @@ us_accidents_cleaned |> spark_write_parquet(
 # EDA
 ## Load accidents data in parquet format
 ```{r}
-# READING PARQUET
+# Reading Parquet
 accidents <- spark_read_parquet(sc, path = "data/us_accidents")
 glimpse(accidents)
 ```
@@ -304,6 +305,15 @@ prop_data <- accidents |>
   collect() 
 
 prop_data
+```
+
+## Correlation Matrix
+```{r}
+num_accidents <- accidents |>
+  select_if(is.numeric)
+
+num_accidents |> 
+  correlate(use = "pairwise.complete.obs", method = "pearson")
 ```
 
 # MODELLING
