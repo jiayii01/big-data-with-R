@@ -313,7 +313,9 @@ num_accidents <- accidents |>
   select_if(is.numeric)
 
 num_accidents |> 
-  correlate(use = "pairwise.complete.obs", method = "pearson")
+  correlate(use = "pairwise.complete.obs", method = "pearson") |>
+  shave(upper = TRUE) |>
+  rplot()
 ```
 
 # MODELLING
