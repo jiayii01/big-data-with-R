@@ -12,6 +12,7 @@ library(tidyverse)
 library(sparklyr)
 library(dbplot)
 library(corrr)
+library(plotly)
 library(ROSE)
 seed_num <- 1234
 sc <- spark_connect(master = "local", version = "3.4.0")
@@ -37,8 +38,8 @@ us_accidents_cleaned <- accidents |>
   mutate(StartHr = hour(Start_Time),
          DayOfWk = date_format(Start_Time, "E"),
          Duration = (End_Time - Start_Time),
-         `Temperature(C)` = round((TemperatureF - 32) * (5/9),1),
-         `Wind_Chill(C)` = round((Wind_ChillF - 32) * (5/9), 1),
+         TemperatureC = round((TemperatureF - 32) * (5/9),1),
+         Wind_ChillC = round((Wind_ChillF - 32) * (5/9), 1),
           TimeOfDay = case_when((StartHr < 12) & (StartHr >= 6) ~ 'Morning',
                                 (StartHr < 18) & (StartHr >= 12) ~ 'Afternoon',
                                 (StartHr < 21) & (StartHr >= 18) ~ 'Evening',
@@ -47,7 +48,11 @@ us_accidents_cleaned <- accidents |>
          ) |>
   select(-c(TemperatureF, Wind_ChillF)) |>
   # filter out accidents with distance 0
-  filter(Distancemi > 0)
+  filter(Distancemi > 0) |>
+  rename(Distance_Mi = Distancemi,
+         Pressure_In = Pressurein,
+         Visibility_Mi = Visibilitymi,
+         Precipitation_In = Precipitationin) 
 glimpse(us_accidents_cleaned)
 
 # WRITE TO PARQUET
@@ -78,7 +83,7 @@ grouped_state <- accidents |>
 
 # Visualize with Spark
 grouped_state |> 
-  ggplot(aes(reorder(State, desc(Count)), Count)) +
+  ggplot(aes(reorder(State, (Count)), Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) +
   labs(title = "Top 10 States with Most Accidents") + 
   coord_flip()
@@ -118,6 +123,22 @@ grouped_tod |>
 ```
 Surprisingly there are more accidents in the day.
 
+## Raster Plot by StartHr
+```{r}
+grouped_startHr <- accidents |>
+  group_by(StartHr) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_startHr |> 
+  mutate(StartHr = as.factor(StartHr), # Specify StartHr to be factor (categorical)  
+         StartHr = reorder(StartHr, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = StartHr, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accidents by StartHr")
+```
+
 ## Top 5 Weather Conditions
 ```{r}
 top_5_weather <- accidents |>
@@ -134,33 +155,34 @@ top_5_weather |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Top 5 Weather Conditions")
 ```
+Most of the accidents seem to occur most when weather is fair, followed by cloudy weather. 
 
-## Explore the distribution of Visibilitymi
+## Explore the distribution of Visibility_Mi
 ```{r}
 grouped_vis <- accidents |>
-  group_by(Visibilitymi) |>
+  group_by(Visibility_Mi) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_vis |> 
-  mutate(Visibilitymi = as.factor(Visibilitymi), # Specify Visibilitymi to be factor (categorical)  
-         Visibilitymi = reorder(Visibilitymi, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = Visibilitymi, y = Count)) +
+  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  
+         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibility_Mi, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
-  labs(title = "Distribution of Accidents by Visibilitymi")
+  labs(title = "Distribution of Accidents by Visibility_Mi")
 ```
 
 ## Scatter Plot Distance Accidents
 ```{r}
 grouped_distancemi <- accidents |>
-  group_by(Distancemi) |>
+  group_by(Distance_Mi) |>
   summarise(Count = n()) |>
   collect()
 
 # Create Scatter Plot
 grouped_distancemi |>
-  ggplot(aes(x = Distancemi, y = Count)) +
+  ggplot(aes(x = Distance_Mi, y = Count)) +
   geom_point() +
   labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents")
 ```
@@ -168,13 +190,13 @@ grouped_distancemi |>
 ## Temperature
 ```{r}
 grouped_temp <- accidents |>
-  group_by(`Temperature(C)`) |>
+  group_by(TemperatureC) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_temp |> 
-  ggplot(aes(x = `Temperature(C)`, y = Count)) +
+  ggplot(aes(x = TemperatureC, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Distribution of Accident's Temperature")
 ```
@@ -228,19 +250,19 @@ top_5_weather |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Top 5 Weather Conditions for Severe Accidents")
 
-# Distribution of Visibilitymi
+# Distribution of Visibility_Mi
 grouped_vis <- severe_accidents |>
-  group_by(Visibilitymi) |>
+  group_by(Visibility_Mi) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_vis |> 
-  mutate(Visibilitymi = as.factor(Visibilitymi), # Specify Visibilitymi to be factor (categorical)  
-         Visibilitymi = reorder(Visibilitymi, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = Visibilitymi, y = Count)) +
+  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  
+         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibility_Mi, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
-  labs(title = "Distribution of Accidents by Visibilitymi for Severe Accidents")
+  labs(title = "Distribution of Accidents by Visibility_Mi for Severe Accidents")
 ```
 Distribution of variables are similar despite filtering for more severe accidents.
 
@@ -280,27 +302,27 @@ crosstab_Severity_TimeOfDay <- accidents |>
 crosstab_Severity_TimeOfDay
 ```
 
-## Summary statistics for Severity and Distancemi 
+## Summary statistics for Severity and Distance_Mi 
 ```{r}
-# Summary statistics for Severity and Distancemi
+# Summary statistics for Severity and Distance_Mi
 accidents |>
-  sdf_describe(cols = c("Severity", "Distancemi"))
+  sdf_describe(cols = c("Severity", "Distance_Mi"))
 ```
 
-## Summary statistics for Distancemi and DayOfWk 
+## Summary statistics for Distance_Mi and DayOfWk 
 ```{r}
-# Summary statistics for Distancemi and DayOfWk
+# Summary statistics for Distance_Mi and DayOfWk
 accidents |>
-  sdf_describe(cols = c("Distancemi", "DayOfWk"))
+  sdf_describe(cols = c("Distance_Mi", "DayOfWk"))
 ```
 
 ```{r}
-# Relationship between Severity and Distancemi
+# Relationship between Severity and Distance_Mi
 prop_data <- accidents |>
-  group_by(Distancemi, Severity) |>
+  group_by(Distance_Mi, Severity) |>
   summarize(n = n()) |>
   group_by(Severity) |>
-  summarize(count = sum(n), dis = sum(Distancemi * n) / sum(n)) |> 
+  summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |> 
   mutate(se = sqrt(dis * (1-dis) / count)) |>
   collect() 
 
@@ -325,7 +347,8 @@ accidents <- accidents |>
   mutate(Severity_Group = case_when((Severity == 1) | (Severity == 2) ~ 'Not Severe',
                                 (Severity == 3) | (Severity == 4) ~ 'Severe'
                                 )) |>
-  select(-c(State, Severity))
+  # removing State, original Severity column and Weather_Condition
+  select(-c(State, Severity, Weather_Condition, Start_Time, End_Time, Weather_Timestamp))
 ```
 
 ## Split Data for Training and Testing
@@ -352,7 +375,7 @@ balanced_accident <- ovun.sample(Severity_Group~., data=accidents_train,
                                   method="over")$data
 ```
 
-## TODO: standardising numerical data
+## TODO: Standardising numerical data
 ```{r}
 
 ```
