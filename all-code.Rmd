@@ -38,8 +38,8 @@ us_accidents_cleaned <- accidents |>
   mutate(StartHr = hour(Start_Time),
          DayOfWk = date_format(Start_Time, "E"),
          Duration = (End_Time - Start_Time),
-         TemperatureC = round((TemperatureF - 32) * (5/9),1),
-         Wind_ChillC = round((Wind_ChillF - 32) * (5/9), 1),
+         Temperature_C = round((TemperatureF - 32) * (5/9),1),
+         Wind_Chill_C = round((Wind_ChillF - 32) * (5/9), 1),
           TimeOfDay = case_when((StartHr < 12) & (StartHr >= 6) ~ 'Morning',
                                 (StartHr < 18) & (StartHr >= 12) ~ 'Afternoon',
                                 (StartHr < 21) & (StartHr >= 18) ~ 'Evening',
@@ -52,8 +52,8 @@ us_accidents_cleaned <- accidents |>
   rename(Distance_Mi = Distancemi,
          Pressure_In = Pressurein,
          Visibility_Mi = Visibilitymi,
-         Precipitation_In = Precipitationin) 
-glimpse(us_accidents_cleaned)
+         Precipitation_In = Precipitationin,
+         Wind_Speed_Mph = Wind_Speedmph) 
 
 # WRITE TO PARQUET
 parquet_path <- "data/us_accidents"
@@ -104,7 +104,7 @@ grouped_severity |>
   geom_col(fill = "deepskyblue4", width = 0.5) +
   labs(title = "Distribution of Accidents by Severity")
 ```
-Majority of the accidents are of severity 2. If we are classifying Severity we might need to perform some resampling.
+Majority of the accidents are of Severity 2. If we are classifying Severity we might need to perform some resampling.
 
 ## Number of Accidents by Time of Day
 ```{r}
@@ -123,7 +123,7 @@ grouped_tod |>
 ```
 Surprisingly there are more accidents in the day.
 
-## Raster Plot by StartHr
+## Distribution of Accidents by StartHr
 ```{r}
 grouped_startHr <- accidents |>
   group_by(StartHr) |>
@@ -138,6 +138,7 @@ grouped_startHr |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Distribution of Accidents by StartHr")
 ```
+We can see that most of the accidents start around 3-5 p.m. in the afternoon. Surprisingly, very few accidents happen past midnight.
 
 ## Top 5 Weather Conditions
 ```{r}
@@ -155,7 +156,7 @@ top_5_weather |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Top 5 Weather Conditions")
 ```
-Most of the accidents seem to occur most when weather is fair, followed by cloudy weather. 
+Most of the accidents seem to occur most when weather is fair, followed by cloudy weather. Thus, weather condition might not be a crucial factor in causing accidents. 
 
 ## Explore the distribution of Visibility_Mi
 ```{r}
@@ -187,16 +188,16 @@ grouped_distancemi |>
   labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents")
 ```
 
-## Temperature
+## Distribution by Temperature during the accidents
 ```{r}
 grouped_temp <- accidents |>
-  group_by(TemperatureC) |>
+  group_by(Temperature_C) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_temp |> 
-  ggplot(aes(x = TemperatureC, y = Count)) +
+  ggplot(aes(x = Temperature_C, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Distribution of Accident's Temperature")
 ```
@@ -217,6 +218,7 @@ grouped_DayOfWk |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Distribution of Accidents Weekday")
 ```
+Most of the accidents seem to be happening during the weekdays, with fewest accidents on the weekends. 
 
 ## Exploring the more severe accidents
 ```{r}
@@ -284,13 +286,49 @@ crosstab_Severity_Wind <- accidents |>
 crosstab_Severity_Wind
 ```
 
-## Crosstab of Severity and Weather_Condition
+## Crosstab of Severity and Crossing
 ```{r}
-# Crosstab with Severity and Weather_Condition
-crosstab_Severity_Weather_Condition <- accidents |>
-  sdf_crosstab("Severity", "Weather_Condition")
+# Crosstab with Severity and Crossing
+crosstab_Severity_Crossing <- accidents |>
+  sdf_crosstab("Severity", "Crossing")
 
-crosstab_Severity_Weather_Condition
+crosstab_Severity_Crossing
+```
+
+## Crosstab of Severity and Give_Way
+```{r}
+# Crosstab with Severity and Give_Way
+crosstab_Severity_Give_Way <- accidents |>
+  sdf_crosstab("Severity", "Give_Way")
+
+crosstab_Severity_Give_Way
+```
+
+## Crosstab of Severity and Junction
+```{r}
+# Crosstab with Severity and Junction
+crosstab_Severity_Junction <- accidents |>
+  sdf_crosstab("Severity", "Junction")
+
+crosstab_Severity_Junction
+```
+
+## Crosstab of Severity and Traffic_Calming
+```{r}
+# Crosstab with Severity and Traffic_Calming
+crosstab_Severity_Traffic_Calming <- accidents |>
+  sdf_crosstab("Severity", "Traffic_Calming")
+
+crosstab_Severity_Traffic_Calming
+```
+
+## Crosstab of Severity and Traffic_Signal
+```{r}
+# Crosstab with Severity and Traffic_Signal
+crosstab_Severity_Traffic_Signal <- accidents |>
+  sdf_crosstab("Severity", "Traffic_Signal")
+
+crosstab_Severity_Traffic_Signal
 ```
 
 ## Crosstab of Severity and TimeOfDay
@@ -301,21 +339,21 @@ crosstab_Severity_TimeOfDay <- accidents |>
 
 crosstab_Severity_TimeOfDay
 ```
+We can see that across all severity levels, most accidents happen during the Afternoon or the Morning
 
-## Summary statistics for Severity and Distance_Mi 
+## Summary statistics for Numerical Columns
 ```{r}
-# Summary statistics for Severity and Distance_Mi
-accidents |>
-  sdf_describe(cols = c("Severity", "Distance_Mi"))
+## getting columns that are numerical
+numerical_col_names_accidents <- accidents |>
+  select_if(is.numeric) |> colnames()
+
+summary_stats <- accidents |>
+  sdf_describe(cols = numerical_col_names_accidents)
+
+summary_stats
 ```
 
-## Summary statistics for Distance_Mi and DayOfWk 
-```{r}
-# Summary statistics for Distance_Mi and DayOfWk
-accidents |>
-  sdf_describe(cols = c("Distance_Mi", "DayOfWk"))
-```
-
+#### TODO
 ```{r}
 # Relationship between Severity and Distance_Mi
 prop_data <- accidents |>
@@ -331,24 +369,31 @@ prop_data
 
 ## Correlation Matrix
 ```{r}
-num_accidents <- accidents |>
+## getting columns that are numerical
+numerical_cols_accidents <- accidents |>
   select_if(is.numeric)
 
-num_accidents |> 
+cat_cols_accidents <- accidents |>
+  select_if(negate(is.numeric))
+
+numerical_cols_accidents |> 
   correlate(use = "pairwise.complete.obs", method = "pearson") |>
   shave(upper = TRUE) |>
   rplot()
 ```
+There is little to no collinearity between predictors of accidents, aside from the high correlation between Wind_Chill_C and Temperature_C. Thus, we will only be keeping the column Temperature_C as it is more robust and easier to understand, whilst providing sufficient information.
 
 # MODELLING
 ## Regrouping Data Severity
 ```{r}
 accidents <- accidents |>
-  mutate(Severity_Group = case_when((Severity == 1) | (Severity == 2) ~ 'Not Severe',
-                                (Severity == 3) | (Severity == 4) ~ 'Severe'
+  mutate(Is_Severe = case_when((Severity == 1) | (Severity == 2) ~ 0,
+                                (Severity == 3) | (Severity == 4) ~ 1
                                 )) |>
   # removing State, original Severity column and Weather_Condition
-  select(-c(State, Severity, Weather_Condition, Start_Time, End_Time, Weather_Timestamp))
+  select(-c(State, Severity, Weather_Condition, Start_Time, End_Time, Weather_Timestamp, Wind_Chill_C))
+
+glimpse(accidents)
 ```
 
 ## Split Data for Training and Testing
@@ -359,18 +404,18 @@ accidents_train <- accidents_split$training
 accidents_test <- accidents_split$testing
 
 accidents_train |>
-  count(Severity_Group) |>
+  count(Is_Severe) |>
   mutate(prop = n / sum(n, na.rm = T))
 
 accidents_test |>
-  count(Severity_Group) |>
+  count(Is_Severe) |>
   mutate(prop = n / sum(n, na.rm = T))
 ```
 
-## Balancing Data
+## TODO: Balancing Data
 ```{r}
 ## there's an error now
-balanced_accident <- ovun.sample(Severity_Group~., data=accidents_train, 
+balanced_accident <- ovun.sample(Is_Severe~., data=accidents_train, 
                                   p=0.5, seed=1, 
                                   method="over")$data
 ```
@@ -380,7 +425,7 @@ balanced_accident <- ovun.sample(Severity_Group~., data=accidents_train,
 
 ```
 
-## TODO: Feature Importance
+## TODO: Feature Importance (removing features we don't need)
 ```{r}
 
 ```
@@ -388,16 +433,39 @@ balanced_accident <- ovun.sample(Severity_Group~., data=accidents_train,
 ## Model Building
 ### Logistic Regression
 ```{r}
-lr_model <- accidents_train |>
-  ml_logistic_regression(formula = Severity_Group~.) |> summary()
 
-lr_model$coefficients
+```
 
-lr_pred <- ml_predict(lr_model, accidents_test)
+## Pipeline
+```{r}
+numerical_col_names_accidents <- accidents |>
+  select_if(is.numeric) |> colnames()
 
-### there's an error will edit
-ml_binary_classification_evaluator(pred)
-table(pull(lr_pred, label), pull(lr_pred, prediction))
+cat_col_names_accidents <- accidents |>
+  select_if(negate(is.numeric)) |> colnames()
+
+accidents_train |> 
+    ft_vector_assembler(
+    input_cols = numerical_col_names_accidents,
+    output_col = "features"
+  ) |>
+    ft_standard_scaler(
+      input_col = "features",
+      output_col = "features_scaled",
+      with_mean = TRUE
+    ) |> 
+  ml_logistic_regression(
+    features_col = "features_scaled",
+    label_col = "Is_Severe"
+  )
+
+pipeline_path <- "accident_spark_pipeline"
+
+# Save ML Pipeline to disk
+ml_save(pipeline, path = pipeline_path, overwrite = TRUE)
+
+# Loading ML Pipeline
+ml_load(sc, pipeline_path)
 ```
 
 # DISCONNECT
