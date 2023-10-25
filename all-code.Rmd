@@ -281,7 +281,7 @@ crosstab_Day_Time
 ```{r}
 # Crosstab with Severity and Windspeed
 crosstab_Severity_Wind <- accidents |>
-  sdf_crosstab("Severity", "Wind_Speedmph")
+  sdf_crosstab("Severity", "Wind_Speed_Mph")
 
 crosstab_Severity_Wind
 ```
@@ -434,6 +434,41 @@ balanced_accident <- ovun.sample(Is_Severe~., data=accidents_train,
 ### Logistic Regression
 ```{r}
 
+```
+
+### Cluster
+```{r}
+# Temperature_C
+
+accidents |>
+  select(Severity, DayOfWk) |>
+  cor(use = "everything") |>
+  round(2)
+
+var(x = accidents$DayOfWk, y = NULL, na.rm = FALSE, use = "pairwise.complete.obs")
+
+
+ggplot(accidents, aes(number_of_reviews, price, color = room_type, shape = room_type)) +
+    geom_point(alpha = 0.25) +
+    xlab("Severity") +
+    ylab("TimeOfDay")
+
+accidents[, c("Severity", "TimeOfDay")] = scale(accidents[, c("Severity", "TimeOfDay")])
+  
+
+numerical_cols_accidents |> 
+  correlate(use = "pairwise.complete.obs", method = "pearson") |>
+  shave(upper = TRUE) |>
+  rplot()
+
+
+accidents[, c("Humidity", "Wind_Chill_C")] = scale(accidents[, c("Humidity", "Wind_Chill_C")])
+
+
+head(accidents)
+head(accidents$DayOfWk)
+head(DayOfWk)
+glimpse(accidents)
 ```
 
 ## Pipeline
