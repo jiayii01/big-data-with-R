@@ -510,7 +510,14 @@ balanced_accident <- ovun.sample(Is_Severe~., data=accidents_train,
 ## Model Building
 ### Logistic Regression
 ```{r}
+# Model with all features
+lr_fit <- accidents_train |> 
+  ml_logistic_regression(formula = Is_Severe ~ .)
 
+model_summary <- ml_evaluate(lr_fit, accidents_test)
+
+# AUC
+model_summary$area_under_roc()
 ```
 
 ### Cluster
@@ -556,20 +563,22 @@ numerical_col_names_accidents <- accidents |>
 cat_col_names_accidents <- accidents |>
   select_if(negate(is.numeric)) |> colnames()
 
-accidents_train |> 
-    ft_vector_assembler(
+pipeline <- ml_pipeline(sc) |>
+  ft_vector_assembler(
     input_cols = numerical_col_names_accidents,
     output_col = "features"
   ) |>
-    ft_standard_scaler(
-      input_col = "features",
-      output_col = "features_scaled",
-      with_mean = TRUE
+  ft_standard_scaler(
+    input_col = "features",
+    output_col = "features_scaled",
+    with_mean = TRUE
     ) |> 
   ml_logistic_regression(
     features_col = "features_scaled",
     label_col = "Is_Severe"
   )
+
+pipeline_model <- ml_fit(pipeline, accidents_train)
 
 pipeline_path <- "accident_spark_pipeline"
 
