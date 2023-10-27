@@ -20,7 +20,7 @@ sc <- spark_connect(master = "local", version = "3.4.0")
 
 # DATA WRANGLING
 ```{r}
-csv_path = "./US_Accidents_March23.csv"
+csv_path = "../US_Accidents_March23.csv"
 
 accidents <- spark_read_csv(
   sc, 
@@ -30,24 +30,24 @@ accidents <- spark_read_csv(
 
 # DATA CLEANING
 us_accidents_cleaned <- accidents |> 
-  # remove columns that are not important
+  # Remove columns that are not important
   select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Description, Timezone, Zipcode, Country, Street, Source, City, County, Airport_Code, Civil_Twilight, Nautical_Twilight, Astronomical_Twilight, Wind_Direction)) |>
   na.omit() |>
-  # looking only at 2022 accidents
+  # Looking only at 2022 accidents
   filter(year(Weather_Timestamp) == 2022) |>
   mutate(StartHr = hour(Start_Time),
          DayOfWk = date_format(Start_Time, "E"),
          Duration = (End_Time - Start_Time),
          Temperature_C = round((TemperatureF - 32) * (5/9),1),
          Wind_Chill_C = round((Wind_ChillF - 32) * (5/9), 1),
-          TimeOfDay = case_when((StartHr < 12) & (StartHr >= 6) ~ 'Morning',
+         TimeOfDay = case_when((StartHr < 12) & (StartHr >= 6) ~ 'Morning',
                                 (StartHr < 18) & (StartHr >= 12) ~ 'Afternoon',
                                 (StartHr < 21) & (StartHr >= 18) ~ 'Evening',
                                 TRUE ~ 'Night'
                                 )
          ) |>
-  select(-c(TemperatureF, Wind_ChillF)) |>
-  # filter out accidents with distance 0
+  select(-c(TemperatureF, Wind_ChillF, Start_Time, End_Time)) |>
+  # Filter out accidents with distance 0
   filter(Distancemi > 0) |>
   rename(Distance_Mi = Distancemi,
          Pressure_In = Pressurein,
@@ -55,6 +55,72 @@ us_accidents_cleaned <- accidents |>
          Precipitation_In = Precipitationin,
          Wind_Speed_Mph = Wind_Speedmph) 
 
+# Looking at distribution of values for categorical variables
+us_accidents_cleaned |>
+   select(Amenity) |> group_by(Amenity) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Bump) |> group_by(Bump) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Crossing) |> group_by(Crossing) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Give_Way) |> group_by(Give_Way) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Junction) |> group_by(Junction) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(No_Exit) |> group_by(No_Exit) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Railway) |> group_by(Railway) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Roundabout) |> group_by(Roundabout) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Station) |> group_by(Station) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Stop) |> group_by(Stop) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Traffic_Calming) |> group_by(Traffic_Calming) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Traffic_Signal) |> group_by(Traffic_Signal) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Turning_Loop) |> group_by(Turning_Loop) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned |>
+   select(Weather_Condition) |> group_by(Weather_Condition) |> summarise(count=n()) |> print(n=100)
+
+us_accidents_cleaned <- us_accidents_cleaned |> 
+  # Reclassify Weather_Condition as the original variable has too many levels (92)
+  mutate(Weather_Condition_New = case_when(
+    grepl('Fair', Weather_Condition) ~ 'Fair',
+    grepl('Cloudy|Overcast', Weather_Condition) ~ 'Cloudy',
+    grepl('Heavy Rain|Rain Shower|T-Storm|Heavy Thunderstorms|Showers', Weather_Condition) ~ 'Heavy Rain',
+    grepl('Rain|Storm|Thunder|Drizzle|Precipitation', Weather_Condition) ~ 'Rainy',
+    grepl('Windy', Weather_Condition) ~ 'Windy',
+    grepl('Heavy Snow|Heavy Sleet|Heavy Ice Pellets|Snow Showers|Squalls|Wintry Mix', Weather_Condition) ~ 'Heavy Snow',
+    grepl('Snow|Sleet|Ice', Weather_Condition) ~ 'Snow',
+    grepl('Fog|Haze|Smoke|Mist', Weather_Condition) ~ 'Fog/Haze/Smoke/Mist',
+    grepl('Heavy Freezing Rain|Freezing Rain', Weather_Condition) ~ 'Freezing Rain',
+    grepl('Hail|Sand|Dust|Tornado|Funnel Cloud', Weather_Condition) ~ 'Hail/Dust/Sand/Tornado'
+    )
+  ) |>
+  # Removing Turning_Loop as a variable as there's only FALSE values
+  select(-c(Turning_Loop, Weather_Condition))
+
+glimpse(us_accidents_cleaned)
+```
+
+## Write to parquet
+```{r}
 # WRITE TO PARQUET
 parquet_path <- "data/us_accidents"
 us_accidents_cleaned |> spark_write_parquet(
@@ -62,6 +128,7 @@ us_accidents_cleaned |> spark_write_parquet(
   mode = "overwrite"
 )
 ```
+
 
 # EDA
 ## Load accidents data in parquet format
@@ -147,16 +214,16 @@ We can see that most of the accidents start around 3-5 p.m. in the afternoon. Su
 ## Top 5 Weather Conditions
 ```{r}
 top_5_weather <- accidents |>
-  group_by(Weather_Condition) |>
+  group_by(Weather_Condition_New) |>
   summarise(Count = n()) |>
   slice_max(order_by = Count, n = 5, with_ties = FALSE) |>
   collect()
 
 # Visualize with Spark
 top_5_weather |> 
-  mutate(Weather_Condition = as.factor(Weather_Condition),
-         Weather_Condition = reorder(Weather_Condition, desc(Count))) |>
-  ggplot(aes(x = Weather_Condition, y = Count)) +
+  mutate(Weather_Condition_New = as.factor(Weather_Condition_New),
+         Weather_Condition_New = reorder(Weather_Condition_New, desc(Count))) |>
+  ggplot(aes(x = Weather_Condition_New, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
   labs(title = "Top 5 Weather Conditions")
@@ -249,15 +316,15 @@ grouped_tod |>
 
 # Weather conditions for severe accidents
 top_5_weather <- severe_accidents |>
-  group_by(Weather_Condition) |>
+  group_by(Weather_Condition_New) |>
   summarise(Count = n()) |>
   slice_max(order_by = Count, n = 5, with_ties = FALSE) |>
   collect()
 
 top_5_weather |> 
-  mutate(Weather_Condition = as.factor(Weather_Condition),
-         Weather_Condition = reorder(Weather_Condition, desc(Count))) |>
-  ggplot(aes(x = Weather_Condition, y = Count)) +
+  mutate(Weather_Condition_New = as.factor(Weather_Condition_New),
+         Weather_Condition_New = reorder(Weather_Condition_New, desc(Count))) |>
+  ggplot(aes(x = Weather_Condition_New, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   labs(title = "Top 5 Weather Conditions for Severe Accidents")
 
@@ -430,7 +497,7 @@ summary_stats <- accidents |>
 summary_stats
 ```
 
-#### TODO
+## Relationship between Severity and Distance_Mi
 ```{r}
 # Relationship between Severity and Distance_Mi
 prop_data <- accidents |>
@@ -467,8 +534,8 @@ accidents <- accidents |>
   mutate(Is_Severe = case_when((Severity == 1) | (Severity == 2) ~ 0,
                                 (Severity == 3) | (Severity == 4) ~ 1
                                 )) |>
-  # removing State, original Severity column and Weather_Condition
-  select(-c(State, Severity, Weather_Condition, Start_Time, End_Time, Weather_Timestamp, Wind_Chill_C))
+  # removing State and original Severity column
+  select(-c(State, Severity, Wind_Chill_C, Weather_Timestamp))
 
 glimpse(accidents)
 ```
@@ -510,9 +577,9 @@ balanced_accident <- ovun.sample(Is_Severe~., data=accidents_train,
 ## Model Building
 ### Logistic Regression
 ```{r}
-# Model with all features (removed 2 problematic columns for now)
+# Model with all features (removed duration)
 lr_fit <- accidents_train |>
-  select(-c(Turning_Loop, Duration)) |>
+  select(-c(Duration)) |>
   ml_generalized_linear_regression(formula = Is_Severe ~ .,
                                    family = "binomial") |>
   tidy() |>
@@ -531,6 +598,63 @@ lr_fit |>
     title = "Confidence Intervals",
     subtitle = "Parameter estimates with approximate 95% confidence intervals"
   )
+```
+
+## Pipeline
+```{r}
+numerical_col_names_accidents <- accidents |>
+  select_if(is.numeric) |> colnames()
+
+cat_col_names_accidents <- accidents |>
+  select_if(negate(is.numeric)) |> colnames()
+
+pipeline <- ml_pipeline(sc) |>
+  ft_vector_assembler(
+    input_cols = numerical_col_names_accidents, 
+    output_col = "features"
+  ) |>
+  ft_standard_scaler(
+    input_col = "features", 
+    output_col = "stdz_features", 
+    with_mean = TRUE
+  ) |>
+  ft_string_indexer(
+    input_col = "sex", 
+    output_col = "sex_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "drinks", 
+    output_col = "drinks_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "drugs", 
+    output_col = "drugs_indexed"
+  ) |>
+  ft_one_hot_encoder(
+    input_cols = c("sex_indexed", "drinks_indexed", "drugs_indexed"),
+    output_cols = c("sex_encoded", "drinks_encoded", "drugs_encoded")
+  ) |>
+  ft_vector_assembler(
+    input_cols = c("stdz_features", "sex_encoded", "drinks_encoded", "drugs_encoded"), 
+    output_col = "final_features"
+  ) |>
+  ml_logistic_regression(
+    max_iter = 1000,
+    features_col = "final_features", 
+    label_col = "not_working"
+  )
+
+pipeline
+
+# pipeline_model <- ml_fit(pipeline, accidents_train)
+# 
+# pipeline_path <- "accident_spark_pipeline"
+# 
+# # Save ML Pipeline to disk
+# ml_save(pipeline, path = pipeline_path, overwrite = TRUE)
+# 
+# # Loading ML Pipeline
+# ml_load(sc, pipeline_path)
 ```
 
 ### Cluster
@@ -566,40 +690,6 @@ head(accidents)
 head(accidents$DayOfWk)
 head(DayOfWk)
 glimpse(accidents)
-```
-
-## Pipeline
-```{r}
-numerical_col_names_accidents <- accidents |>
-  select_if(is.numeric) |> colnames()
-
-cat_col_names_accidents <- accidents |>
-  select_if(negate(is.numeric)) |> colnames()
-
-pipeline <- ml_pipeline(sc) |>
-  ft_vector_assembler(
-    input_cols = numerical_col_names_accidents,
-    output_col = "features"
-  ) |>
-  ft_standard_scaler(
-    input_col = "features",
-    output_col = "features_scaled",
-    with_mean = TRUE
-    ) |> 
-  ml_logistic_regression(
-    features_col = "features_scaled",
-    label_col = "Is_Severe"
-  )
-
-pipeline_model <- ml_fit(pipeline, accidents_train)
-
-pipeline_path <- "accident_spark_pipeline"
-
-# Save ML Pipeline to disk
-ml_save(pipeline, path = pipeline_path, overwrite = TRUE)
-
-# Loading ML Pipeline
-ml_load(sc, pipeline_path)
 ```
 
 # DISCONNECT
