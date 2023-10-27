@@ -510,14 +510,27 @@ balanced_accident <- ovun.sample(Is_Severe~., data=accidents_train,
 ## Model Building
 ### Logistic Regression
 ```{r}
-# Model with all features
-lr_fit <- accidents_train |> 
-  ml_logistic_regression(formula = Is_Severe ~ .)
+# Model with all features (removed 2 problematic columns for now)
+lr_fit <- accidents_train |>
+  select(-c(Turning_Loop, Duration)) |>
+  ml_generalized_linear_regression(formula = Is_Severe ~ .,
+                                   family = "binomial") |>
+  tidy() |>
+  collect()
 
-model_summary <- ml_evaluate(lr_fit, accidents_test)
-
-# AUC
-model_summary$area_under_roc()
+lr_fit |> 
+  ggplot(aes(x = term, y = estimate)) +
+  geom_point(size = 0.5) +
+  geom_errorbar(
+    aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error),
+    width = 0.1
+  ) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() +
+  labs(
+    title = "Confidence Intervals",
+    subtitle = "Parameter estimates with approximate 95% confidence intervals"
+  )
 ```
 
 ### Cluster
