@@ -608,16 +608,16 @@ pipeline <- ml_pipeline(sc) |>
     output_col = "features"
   ) |>
   ft_standard_scaler(
-    input_col = "features", 
-    output_col = "stdz_features", 
+    input_col = "features",
+    output_col = "stdz_features",
     with_mean = TRUE
   ) |>
   ft_string_indexer(
-    input_col = "DayOfWk", 
+    input_col = "DayOfWk",
     output_col = "DayOfWk_indexed"
   ) |>
   ft_string_indexer(
-    input_col = "TimeOfDay", 
+    input_col = "TimeOfDay",
     output_col = "TimeOfDay_indexed"
   ) |>
   ft_one_hot_encoder(
@@ -625,7 +625,7 @@ pipeline <- ml_pipeline(sc) |>
     output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded"), 
+    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded"),
     output_col = "final_features"
   ) |>
   ml_logistic_regression(
@@ -634,10 +634,29 @@ pipeline <- ml_pipeline(sc) |>
     label_col = "Is_Severe"
   )
 
-pipeline
+cv <- ml_cross_validator(
+  sc,
+  estimator = pipeline,
+  estimator_param_maps = list(
+    logistic_regression = list(
+      elastic_net_param = c(0.25, 0.5, 0.75),
+      reg_param = c(0.0001, 0.001, 0.01, 0.1)
+    )
+  ),
+  evaluator = ml_binary_classification_evaluator(
+    sc,
+    label_col = "Is_Severe"
+  ),
+  num_folds = 10,
+  parallelism = 7,
+  seed = seed_num
+)
 
-# pipeline_model <- ml_fit(pipeline, accidents_train)
-# 
+cv_model <- ml_fit(cv, accidents_train)
+
+ml_validation_metrics(cv_model) |>
+  arrange(desc(areaUnderROC))
+
 # pipeline_path <- "accident_spark_pipeline"
 # 
 # # Save ML Pipeline to disk
