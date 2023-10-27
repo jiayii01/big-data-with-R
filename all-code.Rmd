@@ -647,6 +647,7 @@ cv <- ml_cross_validator(
     sc,
     label_col = "Is_Severe"
   ),
+  # can increase folds
   num_folds = 10,
   parallelism = 7,
   seed = seed_num
@@ -656,6 +657,7 @@ cv_model <- ml_fit(cv, accidents_train)
 
 ml_validation_metrics(cv_model) |>
   arrange(desc(areaUnderROC))
+# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
 
 # pipeline_path <- "accident_spark_pipeline"
 # 
