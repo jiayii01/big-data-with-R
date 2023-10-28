@@ -535,7 +535,7 @@ accidents <- accidents |>
                                 (Severity == 3) | (Severity == 4) ~ 1
                                 )) |>
   # removing State and original Severity column
-  select(-c(State, Severity, Wind_Chill_C, Weather_Timestamp))
+  select(-c(State, Severity, Wind_Chill_C, Weather_Timestamp, Duration))
 
 glimpse(accidents)
 ```
@@ -558,10 +558,13 @@ accidents_test |>
 
 ## TODO: Balancing Data
 ```{r}
-## there's an error now
-# balanced_accident <- ovun.sample(Is_Severe~., data=accidents_train, 
-#                                   p=0.5, seed=1, 
-#                                   method="over")$data
+balanced_accident_train <- ovun.sample(Is_Severe~., data=accidents_train,
+                                  p=0.5, seed=seed_num,
+                                  method="both")$data
+
+balanced_accident_train |>
+  count(Is_Severe) |>
+  mutate(prop = n / sum(n, na.rm = T))
 ```
 
 ## Model Building
