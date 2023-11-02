@@ -1,0 +1,13 @@
+---
+title: "About"
+---
+
+About this site
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+print("this works")
+```

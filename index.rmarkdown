@@ -1,0 +1,81 @@
+---
+title: "DSA306 Group Project: Group 7"
+---
+
+
+## Project Introduction
+
+## IMPORTING PACKAGES
+
+
+```{r}
+#| output: false
+library(dplyr)
+library(arrow)
+library(tidyverse)
+library(sparklyr)
+library(dbplot)
+library(corrr)
+library(plotly)
+library(ROSE)
+seed_num <- 1234
+sc <- spark_connect(master = "local", version = "3.4.0")
+```
+
+
+## EDA
+
+#### Load accidents data in parquet format
+
+
+```{r}
+# reading accidents data already made available in parquet data format
+accidents <- spark_read_parquet(sc, path = "data/us_accidents")
+glimpse(accidents)
+```
+
+
+#### Distribution of accidents by State
+
+
+```{r}
+## Distribution of accidents by State
+grouped_state <- accidents |>
+  group_by(State) |>
+  summarise(Count = n()) |>
+  mutate(Count = as.numeric(Count)) |>
+  arrange(desc(Count)) |>
+  head(10) |>
+  collect()
+
+# Visualize with Spark
+grouped_state |> 
+  ggplot(aes(reorder(State, (Count)), Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) +
+  labs(title = "Top 10 States with Most Accidents") + 
+  ylab("State")
+  coord_flip()
+```
+
+
+#### Number of Accidents by Time of Day
+
+
+```{r}
+grouped_tod <- accidents |>
+  group_by(TimeOfDay) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_tod |> 
+  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  
+         TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = TimeOfDay, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  labs(title = "Distribution of Accidents by Time of Day")
+```
+
+
+Surprisingly there are more accidents in the day.
+
