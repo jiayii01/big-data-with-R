@@ -20,7 +20,6 @@ sc <- spark_connect(master = "local", version = "3.4.0")
 ```
 
 # DATA WRANGLING
-
 ```{r}
 csv_path = "../US_Accidents_March23.csv"
 
@@ -133,7 +132,6 @@ us_accidents_cleaned |> spark_write_parquet(
 ```
 
 # EDA
-
 ## Load accidents data in parquet format
 
 ```{r}
@@ -718,10 +716,9 @@ ml_save(cv_model$best_model, path = pipeline_path, overwrite = TRUE)
 ```{r}
 plumb(file = "spark-plumber.R") |>
   pr_run(port = 8000)
-
 ```
 
-### Cluster
+## Cluster
 
 ```{r}
 get_clustering<-function(scores,s){
