@@ -11,8 +11,7 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: model.qmd
-        text: Model
+      - model.qmd
 
 format:
   html:

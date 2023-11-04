@@ -4,6 +4,8 @@ title: "DSA306 Group Project: Group 7"
 
 ## Project Introduction
 
+We chose this
+
 ## IMPORTING PACKAGES
 
 ```{r}

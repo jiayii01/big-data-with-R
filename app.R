@@ -1,19 +1,11 @@
 # Import libraries
 library(shiny)
-library(sparklyr)
 library(httr)
-
-# Start Spark Connection
-sc <- spark_connect(master = "local", version = "3.4.0")
-pipeline_path <- "accidents_spark_model"
-
-# Loading Spark Model
-spark_model <- ml_load(sc, path = pipeline_path)
 
 ui <- pageWithSidebar(
   # Page header
   headerPanel('Accidents Predictor'),
-
+  
   # Input values
   sidebarPanel(
     HTML("<h3>Input parameters</h4>"),
@@ -46,6 +38,7 @@ ui <- pageWithSidebar(
   ),
   
   mainPanel(
+    HTML("Please remember to run <b>Lines 718-721</b> in <b>all-code.rmd</b> to start a local server to get predictions from our trained classifier. <br>"), 
     tags$label(h3('Status/Output')), # Status/Output Text Box
     verbatimTextOutput('contents'),
     h2(textOutput("output_text"))
