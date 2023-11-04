@@ -4,7 +4,7 @@ library(httr)
 
 ui <- pageWithSidebar(
   # Page header
-  headerPanel('Accidents Predictor'),
+  headerPanel(''),
   
   # Input values
   sidebarPanel(
