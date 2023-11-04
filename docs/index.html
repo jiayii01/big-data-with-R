@@ -120,8 +120,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./model.html" rel="" target="">
- <span class="menu-text">Accidents Prediction</span></a>
+    <a class="nav-link" href="./test.html" rel="" target="">
+ <span class="menu-text">Old Faithful</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -167,6 +167,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="project-introduction" class="level2">
 <h2 class="anchored" data-anchor-id="project-introduction">Project Introduction</h2>
+<p>We chose this</p>
 </section>
 <section id="importing-packages" class="level2">
 <h2 class="anchored" data-anchor-id="importing-packages">IMPORTING PACKAGES</h2>
@@ -250,37 +251,10 @@ $ Weather_Condition_New &lt;chr&gt; "Fair", "Fair", "Fair", "Cloudy", "Fair", "F
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">reorder</span>(State, (Count)), Count)) <span class="sc">+</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"deepskyblue4"</span>, <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Top 10 States with Most Accidents"</span>) <span class="sc">+</span> </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"State"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"State"</span>) <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;ggproto object: Class CoordFlip, CoordCartesian, Coord, gg&gt;
-    aspect: function
-    backtransform_range: function
-    clip: on
-    default: FALSE
-    distance: function
-    expand: TRUE
-    is_free: function
-    is_linear: function
-    labels: function
-    limits: list
-    modify_scales: function
-    range: function
-    render_axis_h: function
-    render_axis_v: function
-    render_bg: function
-    render_fg: function
-    setup_data: function
-    setup_layout: function
-    setup_panel_guides: function
-    setup_panel_params: function
-    setup_params: function
-    train_panel_guides: function
-    transform: function
-    super:  &lt;ggproto object: Class CoordFlip, CoordCartesian, Coord, gg&gt;</code></pre>
 </div>
 </div>
 
