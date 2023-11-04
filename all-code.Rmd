@@ -20,6 +20,7 @@ sc <- spark_connect(master = "local", version = "3.4.0")
 ```
 
 # DATA WRANGLING
+
 ```{r}
 csv_path = "../US_Accidents_March23.csv"
 
@@ -115,7 +116,7 @@ us_accidents_cleaned <- us_accidents_cleaned |>
     )
   ) |>
   # Removing Turning_Loop as a variable as there's only FALSE values and removing original Weather_Condition variable
-  select(-c(Turning_Loop, Weather_Condition))
+  select(-c(Turning_Loop, Weather_Condition, Distance_Mi))
 
 glimpse(us_accidents_cleaned)
 ```
@@ -132,6 +133,7 @@ us_accidents_cleaned |> spark_write_parquet(
 ```
 
 # EDA
+
 ## Load accidents data in parquet format
 
 ```{r}
@@ -701,14 +703,25 @@ cv <- ml_cross_validator(
 
 cv_model <- ml_fit(cv, dataset = accidents_train)
 
-# ml_validation_metrics(cv_model) |>
-#   arrange(desc(areaUnderROC))
+ml_validation_metrics(cv_model) |>
+  arrange(desc(areaUnderROC))
 # after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
 
 pipeline_path <- "accidents_spark_model"
 
 # Save PipelineModel to disk
 ml_save(cv_model$best_model, path = pipeline_path, overwrite = TRUE)
+```
+
+## Load PipelineModel
+```{r}
+model_load <- ml_load(sc, "accidents_spark_model")
+# 
+# 
+# predictions <- ml_transform(model_load, accidents_test)
+# 
+# predictions |>
+#   count(Is_Severe, prediction)
 ```
 
 ## Deployment of API Endpoint
@@ -721,64 +734,64 @@ plumb(file = "spark-plumber.R") |>
 ## Cluster
 
 ```{r}
-get_clustering<-function(scores,s){
-scores<-scale(scores)
-SC<-data.table()
-for (k in 2:12){
-    km<-kmeans(scores,k)
-    SC<-rbind(SC,cbind(k,km$tot.withinss,km$betweenss,km$totss))
-}
-colnames(SC) <- c("n","SCI","SCE","SCT")
-print(SC)
-kmeans_fc<-function(x,k) kmeans(x, k, iter.max=50)
-fviz_nbclust(scores,kmeans_fc, method = "wss",linecolor = "red")%>%print()
-fviz_nbclust(scores,kmeans_fc, method = 'silhouette',linecolor = "blue")%>%print()
-fviz_nbclust(scores,kmeans_fc, method = "gap_stat",linecolor = "black")%>%print()
-  ResOp <- kmeans(scores,s)
-cluster <- ResOp$cluster %>% as.data.table()    
-colnames(cluster) <- c("cluster")
-fviz_cluster(ResOp, data = scores,geom = 'point',repel = TRUE,
-             palette='rainbowcols',ellipse.type = "euclid")%>%print()
-return(cbind(scores,cluster) %>% as.data.table())
-}
-df<-get_clustering(accidents,5)
-
-
-cluster <- ml_kmeans(
-  sc,
-  k = 2,
-  max_iter = 10,
-  tol = 1e-04,
-  init_steps = 2,
-  init_mode = "random",
-  seed = seed_num,
-  features_col = "features",
-  prediction_col = "prediction",
-  uid = random_string("kmeans_")
-)
-cluster
-num_iterations <- cluster$numIter
-num_iterations
-centers <- cluster$centers
-centers
-
-sc
-ml_kme
-
-cluster_model <- ml_fit(cluster, accidents_train)
-
-cluster
-
-accidentsss <- data(pipeline)
-
-set.seed(123)
-km.out <- kmeans(pipeline, centers = 3, nstart = 20)
-km.out
-
-
-head(accidents$DayOfWk)
-head(DayOfWk)
-glimpse(accidents)
+# get_clustering<-function(scores,s){
+# scores<-scale(scores)
+# SC<-data.table()
+# for (k in 2:12){
+#     km<-kmeans(scores,k)
+#     SC<-rbind(SC,cbind(k,km$tot.withinss,km$betweenss,km$totss))
+# }
+# colnames(SC) <- c("n","SCI","SCE","SCT")
+# print(SC)
+# kmeans_fc<-function(x,k) kmeans(x, k, iter.max=50)
+# fviz_nbclust(scores,kmeans_fc, method = "wss",linecolor = "red")%>%print()
+# fviz_nbclust(scores,kmeans_fc, method = 'silhouette',linecolor = "blue")%>%print()
+# fviz_nbclust(scores,kmeans_fc, method = "gap_stat",linecolor = "black")%>%print()
+#   ResOp <- kmeans(scores,s)
+# cluster <- ResOp$cluster %>% as.data.table()    
+# colnames(cluster) <- c("cluster")
+# fviz_cluster(ResOp, data = scores,geom = 'point',repel = TRUE,
+#              palette='rainbowcols',ellipse.type = "euclid")%>%print()
+# return(cbind(scores,cluster) %>% as.data.table())
+# }
+# df<-get_clustering(accidents,5)
+# 
+# 
+# cluster <- ml_kmeans(
+#   sc,
+#   k = 2,
+#   max_iter = 10,
+#   tol = 1e-04,
+#   init_steps = 2,
+#   init_mode = "random",
+#   seed = seed_num,
+#   features_col = "features",
+#   prediction_col = "prediction",
+#   uid = random_string("kmeans_")
+# )
+# cluster
+# num_iterations <- cluster$numIter
+# num_iterations
+# centers <- cluster$centers
+# centers
+# 
+# sc
+# ml_kme
+# 
+# cluster_model <- ml_fit(cluster, accidents_train)
+# 
+# cluster
+# 
+# accidentsss <- data(pipeline)
+# 
+# set.seed(123)
+# km.out <- kmeans(pipeline, centers = 3, nstart = 20)
+# km.out
+# 
+# 
+# head(accidents$DayOfWk)
+# head(DayOfWk)
+# glimpse(accidents)
 ```
 
 # DISCONNECT
