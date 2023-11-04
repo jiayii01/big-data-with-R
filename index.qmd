@@ -47,25 +47,6 @@ grouped_state |>
   ggplot(aes(reorder(State, (Count)), Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) +
   labs(title = "Top 10 States with Most Accidents") + 
-  ylab("State")
+  ylab("State") +
   coord_flip()
 ```
-
-#### Number of Accidents by Time of Day
-
-```{r}
-grouped_tod <- accidents |>
-  group_by(TimeOfDay) |>
-  summarise(Count = n()) |>
-  collect()
-
-# Visualize with Spark
-grouped_tod |> 
-  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  
-         TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = TimeOfDay, y = Count)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) + 
-  labs(title = "Distribution of Accidents by Time of Day")
-```
-
-Surprisingly there are more accidents in the day.
