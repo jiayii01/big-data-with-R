@@ -12,5 +12,33 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html#importing-packages",
+    "href": "index.html#importing-packages",
+    "title": "DSA306 Group Project: Group 7",
+    "section": "IMPORTING PACKAGES",
+    "text": "IMPORTING PACKAGES\n\nlibrary(dplyr)\nlibrary(arrow)\nlibrary(tidyverse)\nlibrary(sparklyr)\nlibrary(dbplot)\nlibrary(corrr)\nlibrary(plotly)\nlibrary(ROSE)\nseed_num &lt;- 1234\nsc &lt;- spark_connect(master = \"local\", version = \"3.4.0\")"
+  },
+  {
+    "objectID": "index.html#eda",
+    "href": "index.html#eda",
+    "title": "DSA306 Group Project: Group 7",
+    "section": "EDA",
+    "text": "EDA\n\nLoad accidents data in parquet format\n\n# reading accidents data already made available in parquet data format\naccidents &lt;- spark_read_parquet(sc, path = \"data/us_accidents\")\nglimpse(accidents)\n\nRows: ??\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange\n\n\nColumns: 29\nDatabase: spark_connection\n$ Severity              &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, …\n$ Distance_Mi           &lt;dbl&gt; 0.033, 0.025, 1.421, 0.168, 0.955, 0.863, 0.610,…\n$ State                 &lt;chr&gt; \"TX\", \"VA\", \"CA\", \"TX\", \"OR\", \"LA\", \"WV\", \"OH\", …\n$ Weather_Timestamp     &lt;dttm&gt; 2022-12-17 13:55:00, 2022-10-15 18:52:00, 2022-…\n$ Humidity              &lt;dbl&gt; 25, 45, 11, 55, 28, 61, 17, 62, 69, 51, 50, 29, …\n$ Pressure_In           &lt;dbl&gt; 28.85, 29.59, 29.40, 29.68, 29.86, 29.88, 29.29,…\n$ Visibility_Mi         &lt;dbl&gt; 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, …\n$ Wind_Speed_Mph        &lt;dbl&gt; 5, 5, 17, 18, 5, 7, 5, 3, 10, 12, 12, 6, 8, 7, 6…\n$ Precipitation_In      &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, …\n$ Amenity               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Bump                  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Crossing              &lt;lgl&gt; FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, …\n$ Give_Way              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Junction              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, …\n$ No_Exit               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Railway               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Roundabout            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Station               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Stop                  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Traffic_Calming       &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Traffic_Signal        &lt;lgl&gt; FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, …\n$ Sunrise_Sunset        &lt;chr&gt; \"Day\", \"Day\", \"Day\", \"Day\", \"Day\", \"Day\", \"Day\",…\n$ StartHr               &lt;int&gt; 13, 18, 15, 17, 16, 12, 17, 21, 12, 15, 17, 13, …\n$ DayOfWk               &lt;chr&gt; \"Sat\", \"Sat\", \"Fri\", \"Thu\", \"Mon\", \"Wed\", \"Wed\",…\n$ Duration              &lt;drtn&gt; 25199 secs, 4502 secs, 7372 secs, 7955 secs, 17…\n$ Temperature_C         &lt;dbl&gt; 12.2, 20.0, 20.6, 30.6, 31.7, 9.4, 19.4, 25.0, 2…\n$ Wind_Chill_C          &lt;dbl&gt; 12.2, 20.0, 20.6, 30.6, 31.7, 7.8, 19.4, 25.0, 2…\n$ TimeOfDay             &lt;chr&gt; \"Afternoon\", \"Evening\", \"Afternoon\", \"Afternoon\"…\n$ Weather_Condition_New &lt;chr&gt; \"Fair\", \"Fair\", \"Fair\", \"Cloudy\", \"Fair\", \"Fair\"…\n\n\n\n\nDistribution of accidents by State\n\n## Distribution of accidents by State\ngrouped_state &lt;- accidents |&gt;\n  group_by(State) |&gt;\n  summarise(Count = n()) |&gt;\n  mutate(Count = as.numeric(Count)) |&gt;\n  arrange(desc(Count)) |&gt;\n  head(10) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_state |&gt; \n  ggplot(aes(reorder(State, (Count)), Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) +\n  labs(title = \"Top 10 States with Most Accidents\") + \n  ylab(\"State\")\n\n\n\n  coord_flip()\n\n&lt;ggproto object: Class CoordFlip, CoordCartesian, Coord, gg&gt;\n    aspect: function\n    backtransform_range: function\n    clip: on\n    default: FALSE\n    distance: function\n    expand: TRUE\n    is_free: function\n    is_linear: function\n    labels: function\n    limits: list\n    modify_scales: function\n    range: function\n    render_axis_h: function\n    render_axis_v: function\n    render_bg: function\n    render_fg: function\n    setup_data: function\n    setup_layout: function\n    setup_panel_guides: function\n    setup_panel_params: function\n    setup_params: function\n    train_panel_guides: function\n    transform: function\n    super:  &lt;ggproto object: Class CoordFlip, CoordCartesian, Coord, gg&gt;"
+  },
+  {
+    "objectID": "model.html#importing-packages",
+    "href": "model.html#importing-packages",
+    "title": "Accidents Prediction",
+    "section": "IMPORTING PACKAGES",
+    "text": "IMPORTING PACKAGES\n\n\n\nDistance (Mi)\n\n\n\n\n\nHumidity\n\n\n\n\n\nPressure (In)\n\n\n\n\n\nVisibility (Mi)\n\n\n\n\n\nWind Speed (MPH)\n\n\n\n\n\nPrecipitation (In)\n\n\n\n\n\nStart Hour\n\n\n\n\n\nTemperature (C)\n\n\n\n\n\nAmenity\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nBump\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nCrossing\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nGive Way\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nJunction\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nNo Exit\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nRailway\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nStation\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nStop\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nTraffic Signal\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nSunrise_Sunset\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nDay of Week\n\nMon\nTues\nWed\nThu\nFri\nSat\nSun\n\n\n\n\n\n\nTime of Day\n\nMorning\nAfternoon\nEvening\nNight\n\n\n\n\n\n\nWeather Condition\n\nFair\nCloudy\nHeavy Rain\nRainy\nWindy\nHeavy Snow\nSnow\nFog/Haze/Smoke/Mist\nFreezing Rain\nHail/Dust/Sand/Tornado\n\n\n\n\n\nSubmit\n\n\n\n\n\n\n\nStatus/Output"
+  },
+  {
+    "objectID": "model.html",
+    "href": "model.html",
+    "title": "Accidents Prediction",
+    "section": "",
+    "text": "Number of bins"
   }
 ]
