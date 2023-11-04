@@ -1,14 +1,18 @@
 project:
   type: website
   output-dir: docs
-
+  render:
+    - index.qmd
+    - model.qmd
+    
 website:
   title: "DSA306 Group Project - Group 7"
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: model.qmd
+        text: Model
 
 format:
   html:
