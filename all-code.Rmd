@@ -772,16 +772,16 @@ accidents_test |>
 ## Balancing Data
 
 ```{r}
-balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
-                                  p = 0.5, seed=seed_num,
-                                  method = "both")$data
-
-balanced_accident_train |>
-  count(Is_Severe) |>
-  mutate(prop = n / sum(n, na.rm = T))
-
-balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
-glimpse(balanced_accident_train)
+# balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
+#                                   p = 0.5, seed=seed_num,
+#                                   method = "both")$data
+# 
+# balanced_accident_train |>
+#   count(Is_Severe) |>
+#   mutate(prop = n / sum(n, na.rm = T))
+# 
+# balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
+# glimpse(balanced_accident_train)
 ```
 
 ## Model Building
@@ -798,7 +798,7 @@ lr_fit <- accidents_train |>
 
 lr_fit |> 
   ggplot(aes(x = term, y = estimate)) +
-  scale_y_continuous(name="test", limits=c(-5, 5)) + 
+  # scale_y_continuous(name="estimate", limits=c(-5, 5)) +
   geom_point(size = 0.5) +
   geom_errorbar(
     aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error),
@@ -812,7 +812,7 @@ lr_fit |>
   )
 ```
 
-Using the graph, we have decided to remove Weather_Condition_New, Traffic_Calming and Roundabout from our features as they are statistically insignificant.
+Using the graph, we have decided to remove Traffic_Calming and Roundabout from our features as they are statistically insignificant.
 
 ### Pipeline, Logistic Regression
 
@@ -867,7 +867,7 @@ cv <- ml_cross_validator(
   estimator = pipeline,
   estimator_param_maps = list(
     logistic_regression = list(
-      elastic_net_param = c(0.25, 0.5, 0.75),
+      elastic_net_param = c(0, 0.25, 0.5, 0.75, 1),
       reg_param = c(0.001, 0.01, 0.1)
     )
   ),
@@ -885,19 +885,19 @@ cv_model <- ml_fit(cv, dataset = accidents_train)
 ml_validation_metrics(cv_model) |>
   arrange(desc(areaUnderROC))
 # after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
-
-pipeline_path <- "accidents_spark_model"
-
-# Save PipelineModel to disk
-ml_save(cv_model$best_model, path = pipeline_path, overwrite = TRUE)
+# 
+# pipeline_path <- "accidents_spark_model"
+# 
+# # Save PipelineModel to disk
+# ml_save(cv_model$best_model, path = pipeline_path, overwrite = TRUE)
 ```
 
 ## Load PipelineModel
 ```{r}
-model_load <- ml_load(sc, "accidents_spark_model")
+# model_load <- ml_load(sc, "accidents_spark_model")
 # 
 # 
-predictions <- ml_transform(model_load, accidents_test)
+predictions <- ml_transform(cv_model, accidents_test)
 
 predictions |>
   count(Is_Severe, prediction)
