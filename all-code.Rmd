@@ -772,16 +772,16 @@ accidents_test |>
 ## Balancing Data
 
 ```{r}
-# balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
-#                                   p = 0.5, seed=seed_num,
-#                                   method = "both")$data
-# 
-# balanced_accident_train |>
-#   count(Is_Severe) |>
-#   mutate(prop = n / sum(n, na.rm = T))
-# 
-# balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
-# glimpse(balanced_accident_train)
+balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
+                                  p = 0.5, seed=seed_num,
+                                  method = "both")$data
+
+balanced_accident_train |>
+  count(Is_Severe) |>
+  mutate(prop = n / sum(n, na.rm = T))
+
+balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
+glimpse(balanced_accident_train)
 ```
 
 ## Model Building
