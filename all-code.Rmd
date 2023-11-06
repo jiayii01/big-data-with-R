@@ -180,7 +180,7 @@ grouped_severity |>
   labs(title = "Distribution of Accidents by Severity")
 ```
 
-Majority of the accidents are of Severity 2. If we are classifying Severity we might need to perform some resampling.
+Majority of the accidents are of Severity 2. 
 
 ## Number of Accidents by Time of Day
 
@@ -200,7 +200,7 @@ grouped_tod |>
   labs(title = "Distribution of Accidents by Time of Day")
 ```
 
-Surprisingly there are more accidents in the day.
+Surprisingly there are more accidents in the Afternoon, followed by the Morning.
 
 ## Distribution of Accidents by StartHr
 
@@ -261,21 +261,21 @@ grouped_vis |>
   labs(title = "Distribution of Accidents by Visibility_Mi")
 ```
 
-## Scatter Plot Distance Accidents
+<!-- ## Scatter Plot Distance Accidents -->
 
-```{r}
-grouped_distancemi <- accidents |>
-  group_by(Distance_Mi) |>
-  summarise(Count = n()) |>
-  collect()
+<!-- ```{r} -->
+<!-- grouped_distancemi <- accidents |> -->
+<!--   group_by(Distance_Mi) |> -->
+<!--   summarise(Count = n()) |> -->
+<!--   collect() -->
 
-# Create Scatter Plot
-grouped_distancemi |>
-  ggplot(aes(x = Distance_Mi, y = Count)) +
-  geom_point() +
-  theme_minimal() +
-  labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents")
-```
+<!-- # Create Scatter Plot -->
+<!-- grouped_distancemi |> -->
+<!--   ggplot(aes(x = Distance_Mi, y = Count)) + -->
+<!--   geom_point() + -->
+<!--   theme_minimal() + -->
+<!--   labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents") -->
+<!-- ``` -->
 
 ## Distribution by Temperature during the accidents
 
@@ -291,6 +291,20 @@ grouped_temp |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
   labs(title = "Distribution of Accident's Temperature")
+```
+
+```{r}
+grouped_wind <- accidents |>
+  group_by(Wind_Speed_Mph) |>
+  summarise(Count = n()) |>
+  collect()
+
+# Visualize with Spark
+grouped_wind |> 
+  ggplot(aes(x = Wind_Speed_Mph, y = Count)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) + 
+  theme_minimal() +
+  labs(title = "Distribution of Accident's Wind Speed")
 ```
 
 ## Accidents by Day of Week (descending)
@@ -309,7 +323,7 @@ grouped_DayOfWk |>
   ggplot(aes(x = DayOfWk, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
-  labs(title = "Distribution of Accidents Weekday")
+  labs(title = "Distribution of Accidents by Day of Week")
 ```
 
 Most of the accidents seem to be happening during the weekdays, with fewest accidents on the weekends.
@@ -331,6 +345,7 @@ grouped_tod |>
          TimeOfDay = reorder(TimeOfDay, desc(Count))) |>  # Reorder in descending Count
   ggplot(aes(x = TimeOfDay, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
+  theme_minimal() +
   labs(title = "Distribution of Severe Accidents by Time of Day")
 
 # Weather conditions for severe accidents
@@ -345,6 +360,7 @@ top_5_weather |>
          Weather_Condition_New = reorder(Weather_Condition_New, desc(Count))) |>
   ggplot(aes(x = Weather_Condition_New, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
+  theme_minimal() + 
   labs(title = "Top 5 Weather Conditions for Severe Accidents")
 
 # Distribution of Visibility_Mi
@@ -375,14 +391,54 @@ crosstab_Day_Time <- accidents |>
 crosstab_Day_Time
 ```
 
-## Crosstab of Severity and Windspeed
+```{r}
+# Crosstab with Severity and Weather_Condition_New
+crosstab_Severity_Weather <- accidents |>
+  sdf_crosstab("DayOfWk", "Weather_Condition_New")
+
+crosstab_Severity_Weather
+```
+
+## Crosstab of Severity and Amenity
 
 ```{r}
-# Crosstab with Severity and Windspeed
-crosstab_Severity_Wind <- accidents |>
-  sdf_crosstab("Severity", "Wind_Speed_Mph")
+# Crosstab with Severity and Amenity
+crosstab_Severity_Amenity <- accidents |>
+  sdf_crosstab("Severity", "Amenity")
 
-crosstab_Severity_Wind
+crosstab_Severity_Amenity
+
+data.frame(crosstab_Severity_Amenity) |>
+  gather(key=condition, value = count, false, true) |>
+  group_by(Severity_Amenity) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Amenity, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Amenity", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
+```
+
+## Crosstab of Severity and Bump
+
+```{r}
+# Crosstab with Severity and Bump
+crosstab_Severity_Bump <- accidents |>
+  sdf_crosstab("Severity", "Bump")
+
+crosstab_Severity_Bump
+
+data.frame(crosstab_Severity_Bump) |>
+  gather(key=condition, value = count, false, true) |>
+  group_by(Severity_Bump) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Bump, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Bump", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
 ```
 
 ## Crosstab of Severity and Crossing
@@ -448,6 +504,90 @@ data.frame(crosstab_Severity_Junction) |>
   theme_minimal()
 ```
 
+## Crosstab of Severity and No_Exit
+
+```{r}
+# Crosstab with Severity and No_Exit
+crosstab_Severity_No_Exit <- accidents |>
+  sdf_crosstab("Severity", "No_Exit")
+
+crosstab_Severity_No_Exit
+
+data.frame(crosstab_Severity_No_Exit) |>
+  gather(key=condition, value = count, false, true) |>
+  group_by(Severity_No_Exit) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_No_Exit, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x No_Exit", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
+```
+
+## Crosstab of Severity and Railway
+
+```{r}
+# Crosstab with Severity and Railway
+crosstab_Severity_Railway <- accidents |>
+  sdf_crosstab("Severity", "Railway")
+
+crosstab_Severity_Railway
+
+data.frame(crosstab_Severity_Railway) |>
+  gather(key=condition, value = count, false, true) |>
+  group_by(Severity_Railway) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Railway, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Railway", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
+```
+
+## Crosstab of Severity and Station
+
+```{r}
+# Crosstab with Severity and Station
+crosstab_Severity_Station <- accidents |>
+  sdf_crosstab("Severity", "Station")
+
+crosstab_Severity_Station
+
+data.frame(crosstab_Severity_Station) |>
+  gather(key=condition, value = count, false, true) |>
+  group_by(Severity_Station) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Station, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Station", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
+```
+
+## Crosstab of Severity and Stop
+
+```{r}
+# Crosstab with Severity and Stop
+crosstab_Severity_Stop <- accidents |>
+  sdf_crosstab("Severity", "Stop")
+
+crosstab_Severity_Stop
+
+data.frame(crosstab_Severity_Stop) |>
+  gather(key=condition, value = count, false, true) |>
+  group_by(Severity_Stop) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Stop, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Stop", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
+```
+
 ## Crosstab of Severity and Traffic_Calming
 
 ```{r}
@@ -490,6 +630,26 @@ data.frame(crosstab_Severity_Traffic_Signal) |>
   theme_minimal()
 ```
 
+## Crosstab of Severity and Sunrise_Sunset
+
+```{r}
+# Crosstab with Severity and Sunrise_Sunset
+crosstab_Severity_Sunrise_Sunset <- accidents |>
+  sdf_crosstab("Severity", "Sunrise_Sunset")
+
+crosstab_Severity_Sunrise_Sunset
+
+data.frame(crosstab_Severity_Sunrise_Sunset) |>
+  gather(key=condition, value = count, Night, Day) |>
+  group_by(Severity_Sunrise_Sunset) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Sunrise_Sunset", x = "Severity", y = "Proportion") +
+  theme_minimal()
+```
+
 ## Crosstab of Severity and TimeOfDay
 
 ```{r}
@@ -506,12 +666,30 @@ data.frame(crosstab_Severity_TimeOfDay) |>
   ggplot(aes(x=Severity_TimeOfDay, y=percentage, fill=condition)) +
   geom_bar(stat = "identity", position = "stack") +
   geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
-  labs(title = "Severity x TrafficTimeOfDay", x = "Severity", y = "Proportion") +
-  # scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  labs(title = "Severity x Traffic TimeOfDay", x = "Severity", y = "Proportion") +
   theme_minimal()
 ```
 
-We can see that across all severity levels, most accidents happen during the Afternoon or the Morning We can also see that more severe accidents happen more at Night.
+## Crosstab of Severity and DayOfWk
+
+```{r}
+# Crosstab with Severity and DayOfWk
+crosstab_Severity_DayOfWk <- accidents |>
+  sdf_crosstab("Severity", "DayOfWk")
+
+crosstab_Severity_DayOfWk
+
+data.frame(crosstab_Severity_DayOfWk) |>
+  gather(key=condition, value = count, Mon, Tue, Wed, Thu, Fri, Sat, Sun) |>
+  group_by(Severity_DayOfWk) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_DayOfWk, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Traffic DayOfWk", x = "Severity", y = "Proportion") +
+  # scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +
+  theme_minimal()
+```
 
 ## Summary statistics for Numerical Columns
 
@@ -526,20 +704,20 @@ summary_stats <- accidents |>
 summary_stats
 ```
 
-## Relationship between Severity and Distance_Mi
+<!-- ## Relationship between Severity and Distance_Mi -->
 
-```{r}
-# Relationship between Severity and Distance_Mi
-prop_data <- accidents |>
-  group_by(Distance_Mi, Severity) |>
-  summarize(n = n()) |>
-  group_by(Severity) |>
-  summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |> 
-  mutate(se = sqrt(dis * (1-dis) / count)) |>
-  collect() 
+<!-- ```{r} -->
+<!-- # Relationship between Severity and Distance_Mi -->
+<!-- prop_data <- accidents |> -->
+<!--   group_by(Distance_Mi, Severity) |> -->
+<!--   summarize(n = n()) |> -->
+<!--   group_by(Severity) |> -->
+<!--   summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |>  -->
+<!--   mutate(se = sqrt(dis * (1-dis) / count)) |> -->
+<!--   collect()  -->
 
-prop_data
-```
+<!-- prop_data -->
+<!-- ``` -->
 
 ## Correlation Matrix
 
@@ -594,16 +772,16 @@ accidents_test |>
 ## Balancing Data
 
 ```{r}
-# balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
-#                                   p = 0.5, seed=seed_num,
-#                                   method = "both")$data
-# 
-# balanced_accident_train |>
-#   count(Is_Severe) |>
-#   mutate(prop = n / sum(n, na.rm = T))
-# 
-# balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
-# glimpse(balanced_accident_train)
+balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
+                                  p = 0.5, seed=seed_num,
+                                  method = "both")$data
+
+balanced_accident_train |>
+  count(Is_Severe) |>
+  mutate(prop = n / sum(n, na.rm = T))
+
+balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
+glimpse(balanced_accident_train)
 ```
 
 ## Model Building
@@ -611,7 +789,7 @@ accidents_test |>
 ### Removing features
 
 ```{r}
-# Model with all features (removed duration)
+# Model with all features
 lr_fit <- accidents_train |>
   ml_generalized_linear_regression(formula = Is_Severe ~ .,
                                    family = "binomial") |>
@@ -620,6 +798,7 @@ lr_fit <- accidents_train |>
 
 lr_fit |> 
   ggplot(aes(x = term, y = estimate)) +
+  scale_y_continuous(name="test", limits=c(-5, 5)) + 
   geom_point(size = 0.5) +
   geom_errorbar(
     aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error),
@@ -718,10 +897,10 @@ ml_save(cv_model$best_model, path = pipeline_path, overwrite = TRUE)
 model_load <- ml_load(sc, "accidents_spark_model")
 # 
 # 
-# predictions <- ml_transform(model_load, accidents_test)
-# 
-# predictions |>
-#   count(Is_Severe, prediction)
+predictions <- ml_transform(model_load, accidents_test)
+
+predictions |>
+  count(Is_Severe, prediction)
 ```
 
 ## Deployment of API Endpoint
