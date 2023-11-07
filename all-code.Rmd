@@ -33,7 +33,7 @@ accidents <- spark_read_csv(
 # DATA CLEANING
 us_accidents_cleaned <- accidents |> 
   # Remove columns that are not important
-  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Description, Timezone, Zipcode, Country, Street, Source, City, County, Airport_Code, Civil_Twilight, Nautical_Twilight, Astronomical_Twilight, Wind_Direction)) |>
+  select(-c(ID, Start_Lat, Start_Lng, End_Lat, End_Lng, Description, Timezone, Zipcode, Country, State, Street, Source, City, County, Airport_Code)) |>
   na.omit() |>
   # Looking only at 2022 accidents
   filter(year(Weather_Timestamp) == 2022) |>
@@ -58,6 +58,9 @@ us_accidents_cleaned <- accidents |>
          Wind_Speed_Mph = Wind_Speedmph) 
 
 # Looking at distribution of values for categorical variables
+us_accidents_cleaned |>
+   select(Wind_Direction) |> group_by(Wind_Direction) |> summarise(count=n()) |> print(n=100)
+
 us_accidents_cleaned |>
    select(Amenity) |> group_by(Amenity) |> summarise(count=n()) |> print(n=100)
 
@@ -113,10 +116,17 @@ us_accidents_cleaned <- us_accidents_cleaned |>
     grepl('Fog|Haze|Smoke|Mist', Weather_Condition) ~ 'Fog/Haze/Smoke/Mist',
     grepl('Heavy Freezing Rain|Freezing Rain', Weather_Condition) ~ 'Freezing Rain',
     grepl('Hail|Sand|Dust|Tornado|Funnel Cloud', Weather_Condition) ~ 'Hail/Dust/Sand/Tornado'
-    )
+    ),
+   Wind_Direction_New = case_when((Wind_Direction == 'CALM') ~ 'CALM',
+                          (Wind_Direction == 'W') | (Wind_Direction == 'WSW') | (Wind_Direction == 'WNW') ~ 'W',
+                          (Wind_Direction == 'S') | (Wind_Direction == 'SSW') | (Wind_Direction == 'SSE') | (Wind_Direction == 'SW') | (Wind_Direction == 'SE') ~ 'S',
+                          (Wind_Direction == 'N') | (Wind_Direction == 'NNW') | (Wind_Direction == 'NNE') | (Wind_Direction == 'NW') | (Wind_Direction == 'NE') ~ 'N',
+                          (Wind_Direction == 'E') | (Wind_Direction == 'ESE') | (Wind_Direction == 'ENE') ~ 'E',
+                          TRUE ~ 'VAR'
+                          )
   ) |>
   # Removing Turning_Loop as a variable as there's only FALSE values and removing original Weather_Condition variable
-  select(-c(Turning_Loop, Weather_Condition, Distance_Mi))
+  select(-c(Turning_Loop, Weather_Condition, Wind_Direction))
 
 glimpse(us_accidents_cleaned)
 ```
@@ -140,26 +150,6 @@ us_accidents_cleaned |> spark_write_parquet(
 # Reading Parquet
 accidents <- spark_read_parquet(sc, path = "data/us_accidents")
 glimpse(accidents)
-```
-
-## Distribution of accidents by State
-
-```{r}
-grouped_state <- accidents |>
-  group_by(State) |>
-  summarise(Count = n()) |>
-  mutate(Count = as.numeric(Count)) |>
-  arrange(desc(Count)) |>
-  head(10) |>
-  collect()
-
-# Visualize with Spark
-grouped_state |> 
-  ggplot(aes(reorder(State, (Count)), Count)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
-  labs(title = "Top 10 States with Most Accidents") + 
-  theme_minimal() +
-  coord_flip()
 ```
 
 ## Distribution of Severity
@@ -261,21 +251,71 @@ grouped_vis |>
   labs(title = "Distribution of Accidents by Visibility_Mi")
 ```
 
-<!-- ## Scatter Plot Distance Accidents -->
+## Average Distance Affected Grouped by Severity
 
-<!-- ```{r} -->
-<!-- grouped_distancemi <- accidents |> -->
-<!--   group_by(Distance_Mi) |> -->
-<!--   summarise(Count = n()) |> -->
-<!--   collect() -->
+```{r}
+grouped_distancemi <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Distance_Mi)) |>
+  collect()
 
-<!-- # Create Scatter Plot -->
-<!-- grouped_distancemi |> -->
-<!--   ggplot(aes(x = Distance_Mi, y = Count)) + -->
-<!--   geom_point() + -->
-<!--   theme_minimal() + -->
-<!--   labs(title = "Scatter Plot Distance of Accident", x = "Distance (mi)", y = "Number of Accidents") -->
-<!-- ``` -->
+# Create Scatter Plot
+grouped_distancemi |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Distance Grouped by Severity", x = "Severity", y = "Average Distance (mi)")
+```
+
+## Average Temperature Grouped by Severity
+
+```{r}
+grouped_temp <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Temperature_C)) |>
+  collect()
+
+# Create Scatter Plot
+grouped_temp |>
+  ggplot(aes(x = Severity, y = Avg)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) +
+  theme_minimal() +
+  labs(title = "Average Temperature Grouped by Severity", x = "Severity", y = "Average Temperature (C)")
+```
+
+## Average Visibility Grouped by Severity
+
+```{r}
+grouped_visibility <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Visibility_Mi)) |>
+  collect()
+
+# Create Scatter Plot
+grouped_visibility |>
+  ggplot(aes(x = Severity, y = Avg)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) +
+  theme_minimal() +
+  # scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Visibility Grouped by Severity", x = "Severity", y = "Visibility (mi)")
+```
+
+## Average Wind Speed Grouped by Severity
+
+```{r}
+grouped_wind_speed <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Wind_Speed_Mph)) |>
+  collect()
+
+# Create Scatter Plot
+grouped_wind_speed |>
+  ggplot(aes(x = Severity, y = Avg)) +
+  geom_col(fill = "deepskyblue4", width = 0.5) +
+  theme_minimal() +
+  labs(title = "Average Wind Speed Grouped by Severity", x = "Severity", y = "Wind_Speed (MPH)")
+```
 
 ## Distribution by Temperature during the accidents
 
@@ -397,6 +437,27 @@ crosstab_Severity_Weather <- accidents |>
   sdf_crosstab("DayOfWk", "Weather_Condition_New")
 
 crosstab_Severity_Weather
+```
+
+## Crosstab of Severity and Sunrise_Sunset
+
+```{r}
+# Crosstab with Severity and Sunrise_Sunset
+crosstab_Severity_Sunrise_Sunset <- accidents |>
+  sdf_crosstab("Severity", "Sunrise_Sunset")
+
+crosstab_Severity_Sunrise_Sunset
+
+data.frame(crosstab_Severity_Sunrise_Sunset) |>
+  gather(key=condition, value = count, Night, Day) |>
+  group_by(Severity_Sunrise_Sunset) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Sunrise_Sunset", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("Night" = "#FF9999", "Day" = "99FF99")) +
+  theme_minimal()
 ```
 
 ## Crosstab of Severity and Amenity
@@ -691,6 +752,26 @@ data.frame(crosstab_Severity_DayOfWk) |>
   theme_minimal()
 ```
 
+## Crosstab of Severity and Wind_Direction_New
+
+```{r}
+# Crosstab with Severity and Wind_Direction_New
+crosstab_Severity_Wind_Direction_New <- accidents |>
+  sdf_crosstab("Severity", "Wind_Direction_New")
+
+crosstab_Severity_Wind_Direction_New
+
+data.frame(crosstab_Severity_Wind_Direction_New) |>
+  gather(key=condition, value = count, CALM, VAR, N, S, E, W) |>
+  group_by(Severity_Wind_Direction_New) |>
+  mutate(percentage = count / sum(count) * 100) |>
+  ggplot(aes(x=Severity_Wind_Direction_New, y=percentage, fill=condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Severity x Wind_Direction_New", x = "Severity", y = "Proportion") +
+  theme_minimal()
+```
+
 ## Summary statistics for Numerical Columns
 
 ```{r}
@@ -704,20 +785,20 @@ summary_stats <- accidents |>
 summary_stats
 ```
 
-<!-- ## Relationship between Severity and Distance_Mi -->
+## Relationship between Severity and Distance_Mi
 
-<!-- ```{r} -->
-<!-- # Relationship between Severity and Distance_Mi -->
-<!-- prop_data <- accidents |> -->
-<!--   group_by(Distance_Mi, Severity) |> -->
-<!--   summarize(n = n()) |> -->
-<!--   group_by(Severity) |> -->
-<!--   summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |>  -->
-<!--   mutate(se = sqrt(dis * (1-dis) / count)) |> -->
-<!--   collect()  -->
+```{r}
+# Relationship between Severity and Distance_Mi
+prop_data <- accidents |>
+  group_by(Distance_Mi, Severity) |>
+  summarize(n = n()) |>
+  group_by(Severity) |>
+  summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |>
+  mutate(se = sqrt(dis * (1-dis) / count)) |>
+  collect()
 
-<!-- prop_data -->
-<!-- ``` -->
+prop_data
+```
 
 ## Correlation Matrix
 
@@ -798,7 +879,6 @@ lr_fit <- accidents_train |>
 
 lr_fit |> 
   ggplot(aes(x = term, y = estimate)) +
-  # scale_y_continuous(name="estimate", limits=c(-5, 5)) +
   geom_point(size = 0.5) +
   geom_errorbar(
     aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error),
@@ -815,18 +895,18 @@ lr_fit |>
 Using the graph, we have decided to remove Traffic_Calming and Roundabout from our features as they are statistically insignificant.
 
 ### Pipeline, Logistic Regression
-
+#### MODEL 1
 ```{r}
-accidents_train <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout))
+accidents_train_1 <- accidents_train |>
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight))
 
-numerical_col_names_accidents <- accidents_train |>
+numerical_col_names_accidents <- accidents_train_1 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
 
-cat_col_names_accidents <- accidents_train |>
+cat_col_names_accidents <- accidents_train_1 |>
   select_if(negate(is.numeric)) |> colnames()
 
-pipeline <- ml_pipeline(sc) |>
+pipeline1 <- ml_pipeline(sc) |>
   ft_vector_assembler(
     input_cols = numerical_col_names_accidents, 
     output_col = "features"
@@ -862,9 +942,9 @@ pipeline <- ml_pipeline(sc) |>
     label_col = "Is_Severe"
   )
 
-cv <- ml_cross_validator(
+cv1 <- ml_cross_validator(
   sc,
-  estimator = pipeline,
+  estimator = pipeline1,
   estimator_param_maps = list(
     logistic_regression = list(
       elastic_net_param = c(0, 0.25, 0.5, 0.75, 1),
@@ -880,27 +960,174 @@ cv <- ml_cross_validator(
   seed = seed_num
 )
 
-cv_model <- ml_fit(cv, dataset = accidents_train)
+cv_model_1 <- ml_fit(cv1, dataset = accidents_train_1)
 
-ml_validation_metrics(cv_model) |>
+ml_validation_metrics(cv_model_1) |>
   arrange(desc(areaUnderROC))
 # after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
-# 
-# pipeline_path <- "accidents_spark_model"
-# 
-# # Save PipelineModel to disk
-# ml_save(cv_model$best_model, path = pipeline_path, overwrite = TRUE)
 ```
 
-## Load PipelineModel
+#### MODEL 2
 ```{r}
-# model_load <- ml_load(sc, "accidents_spark_model")
-# 
-# 
-predictions <- ml_transform(cv_model, accidents_test)
+accidents_train_2 <- accidents_train |>
+  select(-c(Traffic_Calming, Roundabout, Weather_Condition_New, Civil_Twilight))
 
-predictions |>
-  count(Is_Severe, prediction)
+numerical_col_names_accidents <- accidents_train_2 |>
+  select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
+
+cat_col_names_accidents <- accidents_train_2 |>
+  select_if(negate(is.numeric)) |> colnames()
+
+pipeline2 <- ml_pipeline(sc) |>
+  ft_vector_assembler(
+    input_cols = numerical_col_names_accidents, 
+    output_col = "features"
+  ) |>
+  ft_standard_scaler(
+    input_col = "features",
+    output_col = "stdz_features",
+    with_mean = TRUE
+  ) |>
+  ft_string_indexer(
+    input_col = "DayOfWk",
+    output_col = "DayOfWk_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "TimeOfDay",
+    output_col = "TimeOfDay_indexed"
+  ) |>
+  ft_one_hot_encoder(
+    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed"),
+    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded")
+  ) |>
+  ft_vector_assembler(
+    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded"),
+    output_col = "final_features"
+  ) |>
+  ml_logistic_regression(
+    max_iter = 1000,
+    features_col = "final_features",
+    label_col = "Is_Severe"
+  )
+
+cv2 <- ml_cross_validator(
+  sc,
+  estimator = pipeline2,
+  estimator_param_maps = list(
+    logistic_regression = list(
+      elastic_net_param = c(0, 0.25, 0.5, 0.75, 1),
+      reg_param = c(0.001, 0.01, 0.1)
+    )
+  ),
+  evaluator = ml_binary_classification_evaluator(
+    sc,
+    label_col = "Is_Severe"
+  ),
+  num_folds = 10,
+  parallelism = 7,
+  seed = seed_num
+)
+
+cv_model_2 <- ml_fit(cv2, dataset = accidents_train_2)
+
+ml_validation_metrics(cv_model_2) |>
+  arrange(desc(areaUnderROC))
+# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
+```
+
+#### MODEL 3
+```{r}
+accidents_train_3 <- accidents_train |>
+  select(-c(Traffic_Calming, Roundabout, Weather_Condition_New, Civil_Twilight, DayOfWk))
+
+numerical_col_names_accidents <- accidents_train_3 |>
+  select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
+
+cat_col_names_accidents <- accidents_train_3 |>
+  select_if(negate(is.numeric)) |> colnames()
+
+pipeline3 <- ml_pipeline(sc) |>
+  ft_vector_assembler(
+    input_cols = numerical_col_names_accidents, 
+    output_col = "features"
+  ) |>
+  ft_standard_scaler(
+    input_col = "features",
+    output_col = "stdz_features",
+    with_mean = TRUE
+  ) |>
+  ft_string_indexer(
+    input_col = "TimeOfDay",
+    output_col = "TimeOfDay_indexed"
+  ) |>
+  ft_one_hot_encoder(
+    input_cols = c("TimeOfDay_indexed"),
+    output_cols = c("TimeOfDay_encoded")
+  ) |>
+  ft_vector_assembler(
+    input_cols = c("stdz_features", "TimeOfDay_encoded"),
+    output_col = "final_features"
+  ) |>
+  ml_logistic_regression(
+    max_iter = 1000,
+    features_col = "final_features",
+    label_col = "Is_Severe"
+  )
+
+cv3 <- ml_cross_validator(
+  sc,
+  estimator = pipeline3,
+  estimator_param_maps = list(
+    logistic_regression = list(
+      elastic_net_param = c(0, 0.25, 0.5, 0.75, 1),
+      reg_param = c(0.001, 0.01, 0.1)
+    )
+  ),
+  evaluator = ml_binary_classification_evaluator(
+    sc,
+    label_col = "Is_Severe"
+  ),
+  num_folds = 10,
+  parallelism = 7,
+  seed = seed_num
+)
+
+cv_model_3 <- ml_fit(cv3, dataset = accidents_train_3)
+
+ml_validation_metrics(cv_model_3) |>
+  arrange(desc(areaUnderROC))
+# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
+```
+
+## Saving Best Model
+```{r}
+pipeline_model_path <- "accidents_spark_model"
+
+# Save PipelineModel to disk
+ml_save(cv_model_2$best_model, path = pipeline_model_path, overwrite = TRUE)
+```
+
+## Load Best PipelineModel
+```{r}
+model_load <- ml_load(sc, pipeline_model_path)
+
+accidents_test_2 <- accidents_test |>
+  select(-c(Traffic_Calming, Roundabout, Weather_Condition_New, Civil_Twilight))
+
+predictions <- ml_transform(model_load, accidents_test_2)
+
+confusion_matrix <- predictions |>
+  count(Is_Severe, prediction) |> collect(); confusion_matrix
+
+TP <- confusion_matrix |> filter(Is_Severe == 1 & prediction == 1) |> pull(n)
+TN <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 0) |> pull(n)
+FP <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 1)
+if(dim(FP)[1] == 0){
+  FP <- 0
+}
+FN <- confusion_matrix |> filter(Is_Severe == 1 & prediction == 0) |> pull(n)
+
+accuracy <- (TP+TN) / (TP+TN+FP+FN); accuracy
 ```
 
 ## Deployment of API Endpoint
@@ -908,69 +1135,6 @@ predictions |>
 ```{r}
 plumb(file = "spark-plumber.R") |>
   pr_run(port = 8000)
-```
-
-## Cluster
-
-```{r}
-# get_clustering<-function(scores,s){
-# scores<-scale(scores)
-# SC<-data.table()
-# for (k in 2:12){
-#     km<-kmeans(scores,k)
-#     SC<-rbind(SC,cbind(k,km$tot.withinss,km$betweenss,km$totss))
-# }
-# colnames(SC) <- c("n","SCI","SCE","SCT")
-# print(SC)
-# kmeans_fc<-function(x,k) kmeans(x, k, iter.max=50)
-# fviz_nbclust(scores,kmeans_fc, method = "wss",linecolor = "red")%>%print()
-# fviz_nbclust(scores,kmeans_fc, method = 'silhouette',linecolor = "blue")%>%print()
-# fviz_nbclust(scores,kmeans_fc, method = "gap_stat",linecolor = "black")%>%print()
-#   ResOp <- kmeans(scores,s)
-# cluster <- ResOp$cluster %>% as.data.table()    
-# colnames(cluster) <- c("cluster")
-# fviz_cluster(ResOp, data = scores,geom = 'point',repel = TRUE,
-#              palette='rainbowcols',ellipse.type = "euclid")%>%print()
-# return(cbind(scores,cluster) %>% as.data.table())
-# }
-# df<-get_clustering(accidents,5)
-# 
-# 
-# cluster <- ml_kmeans(
-#   sc,
-#   k = 2,
-#   max_iter = 10,
-#   tol = 1e-04,
-#   init_steps = 2,
-#   init_mode = "random",
-#   seed = seed_num,
-#   features_col = "features",
-#   prediction_col = "prediction",
-#   uid = random_string("kmeans_")
-# )
-# cluster
-# num_iterations <- cluster$numIter
-# num_iterations
-# centers <- cluster$centers
-# centers
-# 
-# sc
-# ml_kme
-# 
-# cluster_model <- ml_fit(cluster, accidents_train)
-# 
-# cluster
-# 
-# accidentsss <- data(pipeline)
-# 
-# set.seed(123)
-# km.out <- kmeans(pipeline, centers = 3, nstart = 20)
-# km.out
-# 
-# 
-# head(accidents$DayOfWk)
-# head(DayOfWk)
-# glimpse(accidents)
 ```
 
 # DISCONNECT
