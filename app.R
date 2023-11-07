@@ -28,17 +28,18 @@ ui <- pageWithSidebar(
     radioButtons("Station", label="Station", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
     radioButtons("Stop", label="Stop", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
     radioButtons("Traffic_Signal", label="Traffic Signal", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
-    radioButtons("Sunrise_Sunset", label="Sunrise_Sunset", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
+    radioButtons("Sunrise_Sunset", label="Sunrise/Sunset", choices = c("Day" = "Day", "Night" = "Night")),
+    radioButtons("Nautical_Twilight", label="Nautical Twilight", choices = c("Day" = "Day", "Night" = "Night")),
     
     selectInput("DayOfWk", label="Day of Week", choices = c("Mon", "Tues", "Wed", "Thu", "Fri", "Sat", "Sun")),
     selectInput("TimeOfDay", label="Time of Day", choices = c("Morning", "Afternoon", "Evening", "Night")),
-    selectInput("Weather_Condition_New", label="Weather Condition", choices = c("Fair", "Cloudy", "Heavy Rain", "Rainy", "Windy", "Heavy Snow", "Snow", "Fog/Haze/Smoke/Mist", "Freezing Rain", "Hail/Dust/Sand/Tornado")),
+    selectInput("Wind_Direction_New", label="Weather Condition", choices = c("CALM", "W", "S", "N", "E", "VAR")),
     
     actionButton("submitbutton", "Submit", class = "btn btn-primary")
   ),
   
   mainPanel(
-    HTML("Please remember to run <b>Lines 718-721</b> in <b>all-code.rmd</b> to start a local server to get predictions from our trained classifier. <br>"), 
+    HTML("Please remember to run <b>Lines 1137-1140</b> in <b>all-code.rmd</b> to start a local server to get predictions from our trained classifier. <br>"), 
     tags$label(h3('Status/Output')), # Status/Output Text Box
     verbatimTextOutput('contents'),
     h2(textOutput("output_text"))
@@ -72,9 +73,10 @@ server <- function(input, output, session) {
                          Stop = input$Stop,
                          Traffic_Signal = input$Traffic_Signal,
                          Sunrise_Sunset = input$Sunrise_Sunset,
+                         Nautical_Twilight = input$Nautical_Twilight,
                          DayOfWk = input$DayOfWk,
                          TimeOfDay = input$TimeOfDay,
-                         Weather_Condition_New = input$Weather_Condition_New)
+                         Wind_Direction_New = input$Wind_Direction_New)
     
     # Make POST request to the API
     response <- POST(url = "http://127.0.0.1:8000/predict", body = request_body, encode = "json")
@@ -82,15 +84,15 @@ server <- function(input, output, session) {
     # Extract and display API response
     api_result <- content(response, "text")
     output$output_text <- renderText({
-      if (input$submitbutton>0) { 
+      if (input$submitbutton>0) {
         ans <- ""
-        if (api_result == 0){
-          ans <- "Not Severe"
-        } else{
+        if (api_result == "[1]"){
           ans <- "Severe"
+        } else if (api_result == "[0]"){
+          ans <- "Not Severe"
         }
         paste("This accident is", ans)
-      } 
+      }
     })
   })
     

@@ -6,7 +6,7 @@ pipeline_path <- "accidents_spark_model"
 spark_model <- ml_load(sc, path = pipeline_path)
 
 #* @post /predict
-function(Distance_Mi, Humidity, Pressure_In, Visibility_Mi, Wind_Speed_Mph, Precipitation_In, StartHr, Temperature_C, Amenity, Bump, Crossing, Give_Way, Junction, No_Exit, Railway, Station, Stop, Traffic_Signal, Sunrise_Sunset, DayOfWk, TimeOfDay, Weather_Condition_New) {
+function(Distance_Mi, Humidity, Pressure_In, Visibility_Mi, Wind_Speed_Mph, Precipitation_In, StartHr, Temperature_C, Amenity, Bump, Crossing, Give_Way, Junction, No_Exit, Railway, Station, Stop, Traffic_Signal, Sunrise_Sunset, Nautical_Twilight, DayOfWk, TimeOfDay, Wind_Direction_New) {
   new_data <- data.frame(
     Distance_Mi = as.numeric(Distance_Mi),
     Humidity = as.numeric(Humidity),
@@ -27,9 +27,10 @@ function(Distance_Mi, Humidity, Pressure_In, Visibility_Mi, Wind_Speed_Mph, Prec
     Stop = as.logical(Stop),
     Traffic_Signal = as.logical(Traffic_Signal),
     Sunrise_Sunset,
+    Nautical_Twilight,
     DayOfWk,
     TimeOfDay,
-    Weather_Condition_New,
+    Wind_Direction_New,
     Is_Severe = NA
   )
   

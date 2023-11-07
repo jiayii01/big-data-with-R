@@ -13,7 +13,6 @@ library(tidyverse)
 library(sparklyr)
 library(dbplot)
 library(corrr)
-library(ROSE)
 library(plumber)
 seed_num <- 1234
 sc <- spark_connect(master = "local", version = "3.4.0")
@@ -202,8 +201,8 @@ grouped_startHr <- accidents |>
 
 # Visualize with Spark
 grouped_startHr |>
-  mutate(StartHr = as.factor(StartHr), # Specify StartHr to be factor (categorical)  
-         StartHr = reorder(StartHr, desc(Count))) |>  # Reorder in descending Count
+  mutate(StartHr = as_factor(StartHr),
+    StartHr = reorder(StartHr, desc(Count))) |>  # Reorder in descending Count
   ggplot(aes(x = StartHr, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
@@ -827,8 +826,8 @@ accidents <- accidents |>
   mutate(Is_Severe = case_when((Severity == 1) | (Severity == 2) ~ 0,
                                 (Severity == 3) | (Severity == 4) ~ 1
                                 )) |>
-  # removing State and original Severity column
-  select(-c(State, Severity, Wind_Chill_C, Weather_Timestamp, Duration))
+  # removing original Severity and Wind_Chill_C column
+  select(-c(Severity, Wind_Chill_C, Weather_Timestamp, Duration))
 
 glimpse(accidents)
 ```
@@ -848,21 +847,6 @@ accidents_train |>
 accidents_test |>
   count(Is_Severe) |>
   mutate(prop = n / sum(n, na.rm = T))
-```
-
-## Balancing Data
-
-```{r}
-balanced_accident_train <- ovun.sample(Is_Severe~., data = accidents_train,
-                                  p = 0.5, seed=seed_num,
-                                  method = "both")$data
-
-balanced_accident_train |>
-  count(Is_Severe) |>
-  mutate(prop = n / sum(n, na.rm = T))
-
-balanced_accident_train <- sdf_copy_to(sc, balanced_accident_train, "balanced_accident_train", overwrite = TRUE)
-glimpse(balanced_accident_train)
 ```
 
 ## Model Building
@@ -892,13 +876,13 @@ lr_fit |>
   )
 ```
 
-Using the graph, we have decided to remove Traffic_Calming and Roundabout from our features as they are statistically insignificant.
+Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight and Weather_Condition_New from our features as they are statistically insignificant.
 
 ### Pipeline, Logistic Regression
 #### MODEL 1
 ```{r}
 accidents_train_1 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New))
 
 numerical_col_names_accidents <- accidents_train_1 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
@@ -925,16 +909,16 @@ pipeline1 <- ml_pipeline(sc) |>
     output_col = "TimeOfDay_indexed"
   ) |>
   ft_string_indexer(
-    input_col = "Weather_Condition_New",
-    output_col = "Weather_Condition_New_indexed"
+    input_col = "Wind_Direction_New",
+    output_col = "Wind_Direction_New_indexed"
   ) |>
   ft_one_hot_encoder(
-    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed", "Weather_Condition_New_indexed"),
-    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded", "Weather_Condition_New_encoded")
+    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed", "Wind_Direction_New_indexed"),
+    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded", "Weather_Condition_New_encoded"),
-    output_col = "final_features"
+    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded"),
+    output_col = "final_features" 
   ) |>
   ml_logistic_regression(
     max_iter = 1000,
@@ -964,13 +948,13 @@ cv_model_1 <- ml_fit(cv1, dataset = accidents_train_1)
 
 ml_validation_metrics(cv_model_1) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
+# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.001
 ```
 
 #### MODEL 2
 ```{r}
 accidents_train_2 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Weather_Condition_New, Civil_Twilight))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, DayOfWk))
 
 numerical_col_names_accidents <- accidents_train_2 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
@@ -989,20 +973,20 @@ pipeline2 <- ml_pipeline(sc) |>
     with_mean = TRUE
   ) |>
   ft_string_indexer(
-    input_col = "DayOfWk",
-    output_col = "DayOfWk_indexed"
-  ) |>
-  ft_string_indexer(
     input_col = "TimeOfDay",
     output_col = "TimeOfDay_indexed"
   ) |>
+  ft_string_indexer(
+    input_col = "Wind_Direction_New",
+    output_col = "Wind_Direction_New_indexed"
+  ) |>
   ft_one_hot_encoder(
-    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed"),
-    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded")
+    input_cols = c("TimeOfDay_indexed", "Wind_Direction_New_indexed"),
+    output_cols = c("TimeOfDay_encoded", "Wind_Direction_New_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded"),
-    output_col = "final_features"
+    input_cols = c("stdz_features", "TimeOfDay_encoded", "Wind_Direction_New_encoded"),
+    output_col = "final_features" 
   ) |>
   ml_logistic_regression(
     max_iter = 1000,
@@ -1032,13 +1016,13 @@ cv_model_2 <- ml_fit(cv2, dataset = accidents_train_2)
 
 ml_validation_metrics(cv_model_2) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
+# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.001
 ```
 
 #### MODEL 3
 ```{r}
 accidents_train_3 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Weather_Condition_New, Civil_Twilight, DayOfWk))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Wind_Direction_New))
 
 numerical_col_names_accidents <- accidents_train_3 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
@@ -1057,16 +1041,20 @@ pipeline3 <- ml_pipeline(sc) |>
     with_mean = TRUE
   ) |>
   ft_string_indexer(
+    input_col = "DayOfWk",
+    output_col = "DayOfWk_indexed"
+  ) |>
+  ft_string_indexer(
     input_col = "TimeOfDay",
     output_col = "TimeOfDay_indexed"
   ) |>
   ft_one_hot_encoder(
-    input_cols = c("TimeOfDay_indexed"),
-    output_cols = c("TimeOfDay_encoded")
+    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed"),
+    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "TimeOfDay_encoded"),
-    output_col = "final_features"
+    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded"),
+    output_col = "final_features" 
   ) |>
   ml_logistic_regression(
     max_iter = 1000,
@@ -1096,7 +1084,7 @@ cv_model_3 <- ml_fit(cv3, dataset = accidents_train_3)
 
 ml_validation_metrics(cv_model_3) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.01
+# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.001
 ```
 
 ## Saving Best Model
@@ -1104,17 +1092,17 @@ ml_validation_metrics(cv_model_3) |>
 pipeline_model_path <- "accidents_spark_model"
 
 # Save PipelineModel to disk
-ml_save(cv_model_2$best_model, path = pipeline_model_path, overwrite = TRUE)
+ml_save(cv_model_1$best_model, path = pipeline_model_path, overwrite = TRUE)
 ```
 
 ## Load Best PipelineModel
 ```{r}
 model_load <- ml_load(sc, pipeline_model_path)
 
-accidents_test_2 <- accidents_test |>
-  select(-c(Traffic_Calming, Roundabout, Weather_Condition_New, Civil_Twilight))
+accidents_test_1 <- accidents_test |>
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New))
 
-predictions <- ml_transform(model_load, accidents_test_2)
+predictions <- ml_transform(model_load, accidents_test_1)
 
 confusion_matrix <- predictions |>
   count(Is_Severe, prediction) |> collect(); confusion_matrix
@@ -1124,6 +1112,8 @@ TN <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 0) |> pull(n)
 FP <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 1)
 if(dim(FP)[1] == 0){
   FP <- 0
+} else{
+  FP <-  FP |> pull(n)
 }
 FN <- confusion_matrix |> filter(Is_Severe == 1 & prediction == 0) |> pull(n)
 
