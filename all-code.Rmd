@@ -169,7 +169,7 @@ grouped_severity |>
   labs(title = "Distribution of Accidents by Severity")
 ```
 
-Majority of the accidents are of Severity 2. 
+Majority of the accidents are of Severity 2.
 
 ## Number of Accidents by Time of Day
 
@@ -445,8 +445,6 @@ crosstab_Severity_Weather
 crosstab_Severity_Sunrise_Sunset <- accidents |>
   sdf_crosstab("Severity", "Sunrise_Sunset")
 
-crosstab_Severity_Sunrise_Sunset
-
 data.frame(crosstab_Severity_Sunrise_Sunset) |>
   gather(key=condition, value = count, Night, Day) |>
   group_by(Severity_Sunrise_Sunset) |>
@@ -465,8 +463,6 @@ data.frame(crosstab_Severity_Sunrise_Sunset) |>
 # Crosstab with Severity and Amenity
 crosstab_Severity_Amenity <- accidents |>
   sdf_crosstab("Severity", "Amenity")
-
-crosstab_Severity_Amenity
 
 data.frame(crosstab_Severity_Amenity) |>
   gather(key=condition, value = count, false, true) |>
@@ -487,8 +483,6 @@ data.frame(crosstab_Severity_Amenity) |>
 crosstab_Severity_Bump <- accidents |>
   sdf_crosstab("Severity", "Bump")
 
-crosstab_Severity_Bump
-
 data.frame(crosstab_Severity_Bump) |>
   gather(key=condition, value = count, false, true) |>
   group_by(Severity_Bump) |>
@@ -507,8 +501,6 @@ data.frame(crosstab_Severity_Bump) |>
 # Crosstab with Severity and Crossing
 crosstab_Severity_Crossing <- accidents |>
   sdf_crosstab("Severity", "Crossing")
-
-crosstab_Severity_Crossing
 
 data.frame(crosstab_Severity_Crossing) |>
   gather(key=condition, value = count, false, true) |>
@@ -529,8 +521,6 @@ data.frame(crosstab_Severity_Crossing) |>
 crosstab_Severity_Give_Way <- accidents |>
   sdf_crosstab("Severity", "Give_Way")
 
-crosstab_Severity_Give_Way
-
 data.frame(crosstab_Severity_Give_Way) |>
   gather(key=condition, value = count, false, true) |>
   group_by(Severity_Give_Way) |>
@@ -549,8 +539,6 @@ data.frame(crosstab_Severity_Give_Way) |>
 # Crosstab with Severity and Junction
 crosstab_Severity_Junction <- accidents |>
   sdf_crosstab("Severity", "Junction")
-
-crosstab_Severity_Junction
 
 data.frame(crosstab_Severity_Junction) |>
   gather(key=condition, value = count, false, true) |>
@@ -571,8 +559,6 @@ data.frame(crosstab_Severity_Junction) |>
 crosstab_Severity_No_Exit <- accidents |>
   sdf_crosstab("Severity", "No_Exit")
 
-crosstab_Severity_No_Exit
-
 data.frame(crosstab_Severity_No_Exit) |>
   gather(key=condition, value = count, false, true) |>
   group_by(Severity_No_Exit) |>
@@ -591,8 +577,6 @@ data.frame(crosstab_Severity_No_Exit) |>
 # Crosstab with Severity and Railway
 crosstab_Severity_Railway <- accidents |>
   sdf_crosstab("Severity", "Railway")
-
-crosstab_Severity_Railway
 
 data.frame(crosstab_Severity_Railway) |>
   gather(key=condition, value = count, false, true) |>
@@ -613,8 +597,6 @@ data.frame(crosstab_Severity_Railway) |>
 crosstab_Severity_Station <- accidents |>
   sdf_crosstab("Severity", "Station")
 
-crosstab_Severity_Station
-
 data.frame(crosstab_Severity_Station) |>
   gather(key=condition, value = count, false, true) |>
   group_by(Severity_Station) |>
@@ -633,8 +615,6 @@ data.frame(crosstab_Severity_Station) |>
 # Crosstab with Severity and Stop
 crosstab_Severity_Stop <- accidents |>
   sdf_crosstab("Severity", "Stop")
-
-crosstab_Severity_Stop
 
 data.frame(crosstab_Severity_Stop) |>
   gather(key=condition, value = count, false, true) |>
@@ -655,8 +635,6 @@ data.frame(crosstab_Severity_Stop) |>
 crosstab_Severity_Traffic_Calming <- accidents |>
   sdf_crosstab("Severity", "Traffic_Calming")
 
-crosstab_Severity_Traffic_Calming
-
 data.frame(crosstab_Severity_Traffic_Calming) |>
   gather(key=condition, value = count, false, true) |>
   group_by(Severity_Traffic_Calming) |>
@@ -675,8 +653,6 @@ data.frame(crosstab_Severity_Traffic_Calming) |>
 # Crosstab with Severity and Traffic_Signal
 crosstab_Severity_Traffic_Signal <- accidents |>
   sdf_crosstab("Severity", "Traffic_Signal")
-
-crosstab_Severity_Traffic_Signal
 
 data.frame(crosstab_Severity_Traffic_Signal) |>
   gather(key=condition, value = count, false, true) |>
@@ -697,8 +673,6 @@ data.frame(crosstab_Severity_Traffic_Signal) |>
 crosstab_Severity_Sunrise_Sunset <- accidents |>
   sdf_crosstab("Severity", "Sunrise_Sunset")
 
-crosstab_Severity_Sunrise_Sunset
-
 data.frame(crosstab_Severity_Sunrise_Sunset) |>
   gather(key=condition, value = count, Night, Day) |>
   group_by(Severity_Sunrise_Sunset) |>
@@ -717,8 +691,6 @@ data.frame(crosstab_Severity_Sunrise_Sunset) |>
 crosstab_Severity_TimeOfDay <- accidents |>
   sdf_crosstab("Severity", "TimeOfDay")
 
-crosstab_Severity_TimeOfDay
-
 data.frame(crosstab_Severity_TimeOfDay) |>
   gather(key=condition, value = count, Afternoon, Evening, Morning, Night) |>
   group_by(Severity_TimeOfDay) |>
@@ -736,8 +708,6 @@ data.frame(crosstab_Severity_TimeOfDay) |>
 # Crosstab with Severity and DayOfWk
 crosstab_Severity_DayOfWk <- accidents |>
   sdf_crosstab("Severity", "DayOfWk")
-
-crosstab_Severity_DayOfWk
 
 data.frame(crosstab_Severity_DayOfWk) |>
   gather(key=condition, value = count, Mon, Tue, Wed, Thu, Fri, Sat, Sun) |>
@@ -758,8 +728,6 @@ data.frame(crosstab_Severity_DayOfWk) |>
 crosstab_Severity_Wind_Direction_New <- accidents |>
   sdf_crosstab("Severity", "Wind_Direction_New")
 
-crosstab_Severity_Wind_Direction_New
-
 data.frame(crosstab_Severity_Wind_Direction_New) |>
   gather(key=condition, value = count, CALM, VAR, N, S, E, W) |>
   group_by(Severity_Wind_Direction_New) |>
@@ -774,6 +742,7 @@ data.frame(crosstab_Severity_Wind_Direction_New) |>
 ## Summary statistics for Numerical Columns
 
 ```{r}
+options(max.print = 100)
 ## getting columns that are numerical
 numerical_col_names_accidents <- accidents |>
   select_if(is.numeric) |> colnames()
@@ -799,7 +768,7 @@ prop_data <- accidents |>
 prop_data
 ```
 
-## Correlation Matrix
+## Correlation Matrix for Numerical Values
 
 ```{r}
 ## getting columns that are numerical
@@ -879,7 +848,9 @@ lr_fit |>
 Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight and Weather_Condition_New from our features as they are statistically insignificant.
 
 ### Pipeline, Logistic Regression
+
 #### MODEL 1
+
 ```{r}
 accidents_train_1 <- accidents_train |>
   select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New))
@@ -952,6 +923,7 @@ ml_validation_metrics(cv_model_1) |>
 ```
 
 #### MODEL 2
+
 ```{r}
 accidents_train_2 <- accidents_train |>
   select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, DayOfWk))
@@ -1020,6 +992,7 @@ ml_validation_metrics(cv_model_2) |>
 ```
 
 #### MODEL 3
+
 ```{r}
 accidents_train_3 <- accidents_train |>
   select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Wind_Direction_New))
@@ -1088,6 +1061,7 @@ ml_validation_metrics(cv_model_3) |>
 ```
 
 ## Saving Best Model
+
 ```{r}
 pipeline_model_path <- "accidents_spark_model"
 
@@ -1096,6 +1070,7 @@ ml_save(cv_model_1$best_model, path = pipeline_model_path, overwrite = TRUE)
 ```
 
 ## Load Best PipelineModel
+
 ```{r}
 model_load <- ml_load(sc, pipeline_model_path)
 
