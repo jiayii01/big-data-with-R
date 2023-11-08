@@ -49,13 +49,10 @@ ui <- pageWithSidebar(
 server <- function(input, output, session) {
   
   observeEvent(input$submitbutton, {
-    # Get the user input
-    user_input <- input$input_param
-    
     # Create a request body
     request_body <- list(Distance_Km = input$Distance_Km,
                          Humidity = input$Humidity,
-                         Pressure_In = input$Pressure_In,
+                         Pressure_Cm = input$Pressure_Cm,
                          Visibility_Km = input$Visibility_Km,
                          Wind_Speed_KmPH = input$Wind_Speed_KmPH,
                          Precipitation_Cm = input$Precipitation_Cm,
@@ -77,7 +74,7 @@ server <- function(input, output, session) {
                          Wind_Direction_New = input$Wind_Direction_New)
     
     # Make POST request to the API
-    response <- POST(url = "http://0.0.0.0:8000/predict", body = request_body, encode = "json")
+    response <- POST(url = "http://localhost:8000/predict", body = request_body, encode = "json")
     
     # Extract and display API response
     api_result <- content(response, "text")

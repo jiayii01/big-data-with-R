@@ -1,9 +1,15 @@
-library(sparklyr); library(dplyr)
+library(sparklyr); library(dplyr); library(plumber)
 
 sc <- spark_connect(master = "local", version = "3.4.0")
 pipeline_path <- "accidents_spark_model"
 
 spark_model <- ml_load(sc, path = pipeline_path)
+
+#' @filter cors
+cors <- function(req, res) {
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  forward()
+}
 
 #* @post /predict
 function(Distance_Km, Humidity, Pressure_Cm, Visibility_Km, Wind_Speed_KmPH, Precipitation_Cm, StartHr, Temperature_C, Amenity, Crossing, Give_Way, Junction, No_Exit, Railway, Station, Stop, Traffic_Signal, Sunrise_Sunset, Nautical_Twilight, DayOfWk, TimeOfDay, Wind_Direction_New) {
@@ -12,7 +18,7 @@ function(Distance_Km, Humidity, Pressure_Cm, Visibility_Km, Wind_Speed_KmPH, Pre
     Humidity = as.numeric(Humidity),
     Pressure_Cm = as.numeric(Pressure_Cm),
     Visibility_Km = as.numeric(Visibility_Km),
-    Wind_Speed_Mph = as.numeric(Wind_Speed_Mph),
+    Wind_Speed_KmPH = as.numeric(Wind_Speed_KmPH),
     Precipitation_Cm = as.numeric(Precipitation_Cm),
     StartHr = as.numeric(StartHr),
     Temperature_C = as.numeric(Temperature_C),
