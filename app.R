@@ -74,7 +74,7 @@ server <- function(input, output, session) {
                          Wind_Direction_New = input$Wind_Direction_New)
     
     # Make POST request to the API
-    response <- POST(url = "http://localhost:8000/predict", body = request_body, encode = "json")
+    response <- POST(url = "http://0.0.0.0:8000/predict", body = request_body, encode = "json")
     
     # Extract and display API response
     api_result <- content(response, "text")
