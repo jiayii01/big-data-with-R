@@ -9,17 +9,16 @@ ui <- pageWithSidebar(
   # Input values
   sidebarPanel(
     HTML("<h3>Input parameters</h4>"),
-    sliderInput("Distance_Mi", label = "Distance (Mi)", value = 1.04092843, min = 0.002, max = 336.570007),
-    sliderInput("Humidity", label = "Humidity", value = 61.6816, min = 1.0, max = 100.0),
-    sliderInput("Pressure_In", label = "Pressure (In)", value = 29.3758623, min = 0.0, max = 58.63),
-    sliderInput("Visibility_Mi", label = "Visibility (Mi)", value = 9.1585846961, min = 0.0, max = 90.0),
-    sliderInput("Wind_Speed_Mph", label = "Wind Speed (MPH)", value = 7.74101097781, min = 0.0, max = 190.0),
-    sliderInput("Precipitation_In", label = "Precipitation (In)", value = 0.0054714150478, min = 0.0, max = 3.0),
+    sliderInput("Distance_Km", label = "Distance (KM)", value = 1.675, min = 0.003, max = 541.541),
+    sliderInput("Humidity", label = "Humidity (%)", value = 61.6816, min = 1.0, max = 100.0),
+    sliderInput("Pressure_Cm", label = "Pressure (Cm)", value = 74.615, min = 0.0, max = 148.92),
+    sliderInput("Visibility_Km", label = "Visibility (KM)", value = 14.736169319, min = 0.0, max = 144.81),
+    sliderInput("Wind_Speed_KmPH", label = "Wind Speed (KM/H)", value = 12.455, min = 0.0, max = 305.71),
+    sliderInput("Precipitation_Cm", label = "Precipitation (Cm)", value = 0.01389, min = 0.0, max = 7.62),
     sliderInput("StartHr", label = "Start Hour", value = 13, min = 0, max = 23),
     sliderInput("Temperature_C", label = "Temperature (C)", value = 17.371791908, min = -42.8, max = 77.8),
     
     radioButtons("Amenity", label="Amenity", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
-    radioButtons("Bump", label="Bump", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
     radioButtons("Crossing", label="Crossing", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
     radioButtons("Give_Way", label="Give Way", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
     radioButtons("Junction", label="Junction", choices = c("TRUE" = TRUE, "FALSE" = FALSE)),
@@ -54,16 +53,15 @@ server <- function(input, output, session) {
     user_input <- input$input_param
     
     # Create a request body
-    request_body <- list(Distance_Mi = input$Distance_Mi,
+    request_body <- list(Distance_Km = input$Distance_Km,
                          Humidity = input$Humidity,
                          Pressure_In = input$Pressure_In,
-                         Visibility_Mi = input$Visibility_Mi,
-                         Wind_Speed_Mph = input$Wind_Speed_Mph,
-                         Precipitation_In = input$Precipitation_In,
+                         Visibility_Km = input$Visibility_Km,
+                         Wind_Speed_KmPH = input$Wind_Speed_KmPH,
+                         Precipitation_Cm = input$Precipitation_Cm,
                          StartHr = input$StartHr,
                          Temperature_C = input$Temperature_C,
                          Amenity = input$Amenity,
-                         Bump = input$Bump,
                          Crossing = input$Crossing,
                          Give_Way = input$Give_Way,
                          Junction = input$Junction,
@@ -79,7 +77,7 @@ server <- function(input, output, session) {
                          Wind_Direction_New = input$Wind_Direction_New)
     
     # Make POST request to the API
-    response <- POST(url = "http://127.0.0.1:8000/predict", body = request_body, encode = "json")
+    response <- POST(url = "http://0.0.0.0:8000/predict", body = request_body, encode = "json")
     
     # Extract and display API response
     api_result <- content(response, "text")

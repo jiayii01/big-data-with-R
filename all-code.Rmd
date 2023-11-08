@@ -39,22 +39,22 @@ us_accidents_cleaned <- accidents |>
   mutate(StartHr = hour(Start_Time),
          DayOfWk = date_format(Start_Time, "E"),
          Duration = (End_Time - Start_Time),
-         Temperature_C = round((TemperatureF - 32) * (5/9),1),
-         Wind_Chill_C = round((Wind_ChillF - 32) * (5/9), 1),
+         Temperature_C = round((TemperatureF - 32) * (5/9), 2),
+         Wind_Chill_C = round((Wind_ChillF - 32) * (5/9), 2),
+         Distance_Km = round(Distancemi * 1.609, 3),
+         Pressure_Cm = round(Pressurein * 2.54, 3),
+         Visibility_Km = round(Visibilitymi * 1.609, 3),
+         Precipitation_Cm = round(Precipitationin * 2.54, 3),
+         Wind_Speed_KmPH = round(Wind_Speedmph * 1.609, 3),
          TimeOfDay = case_when((StartHr < 12) & (StartHr >= 6) ~ 'Morning',
                                 (StartHr < 18) & (StartHr >= 12) ~ 'Afternoon',
                                 (StartHr < 21) & (StartHr >= 18) ~ 'Evening',
                                 TRUE ~ 'Night'
                                 )
          ) |>
-  select(-c(TemperatureF, Wind_ChillF, Start_Time, End_Time)) |>
+  select(-c(TemperatureF, Wind_ChillF, Start_Time, End_Time, Distancemi, Pressurein, Visibilitymi, Precipitationin, Wind_Speedmph, Weather_Timestamp)) |>
   # Filter out accidents with distance 0
-  filter(Distancemi > 0) |>
-  rename(Distance_Mi = Distancemi,
-         Pressure_In = Pressurein,
-         Visibility_Mi = Visibilitymi,
-         Precipitation_In = Precipitationin,
-         Wind_Speed_Mph = Wind_Speedmph) 
+  filter(Distance_Km > 0) 
 
 # Looking at distribution of values for categorical variables
 us_accidents_cleaned |>
@@ -232,39 +232,124 @@ top_5_weather |>
 
 Most of the accidents seem to occur most when weather is fair, followed by cloudy weather. Thus, weather condition might not be a crucial factor in causing accidents.
 
-## Explore the distribution of Visibility_Mi
+## Explore the distribution of Visibility_Km
 
 ```{r}
 grouped_vis <- accidents |>
-  group_by(Visibility_Mi) |>
+  group_by(Visibility_Km) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_vis |> 
-  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  
-         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = Visibility_Mi, y = Count)) +
+  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  
+         Visibility_Km = reorder(Visibility_Km, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibility_Km, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
-  labs(title = "Distribution of Accidents by Visibility_Mi")
+  labs(title = "Distribution of Accidents by Visibility_Km")
 ```
 
 ## Average Distance Affected Grouped by Severity
 
 ```{r}
-grouped_distancemi <- accidents |>
+grouped_distance <- accidents |>
   group_by(Severity) |>
-  summarise(Avg = mean(Distance_Mi)) |>
+  summarise(Avg = mean(Distance_Km)) |>
   collect()
 
-# Create Scatter Plot
-grouped_distancemi |>
+# Visualize with Spark
+grouped_distance |>
   ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
   geom_col() +
   theme_minimal() +
   scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
-  labs(title = "Average Distance Grouped by Severity", x = "Severity", y = "Average Distance (mi)")
+  labs(title = "Average Distance Grouped by Severity", x = "Severity", y = "Average Distance (KM)")
+```
+
+## Average Humidity Grouped by Severity
+
+```{r}
+grouped_humidity <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Humidity)) |>
+  collect()
+
+# Visualize with Spark
+grouped_humidity |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Humidity Grouped by Severity", x = "Severity", y = "Humidity (%)")
+```
+
+## Average Pressure Grouped by Severity
+
+```{r}
+grouped_pressure <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Pressure_Cm)) |>
+  collect()
+
+# Visualize with Spark
+grouped_pressure |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Pressure Grouped by Severity", x = "Severity", y = "Pressure (CM)")
+```
+
+## Average Visibility Grouped by Severity
+
+```{r}
+grouped_visibility <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Visibility_Km)) |>
+  collect()
+
+# Visualize with Spark
+grouped_visibility |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Visibility Grouped by Severity", x = "Severity", y = "Visibility (KM)")
+```
+
+## Average Wind Speed Grouped by Severity
+
+```{r}
+grouped_wind_speed <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Wind_Speed_KmPH)) |>
+  collect()
+
+# Visualize with Spark
+grouped_wind_speed |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Wind Speed Grouped by Severity", x = "Severity", y = "Wind Speed (KmPH)")
+```
+
+## Average Precipitation Grouped by Severity
+
+```{r}
+grouped_precipitation <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Precipitation_Cm)) |>
+  collect()
+
+# Visualize with Spark
+grouped_precipitation |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Precipitation Grouped by Severity", x = "Severity", y = "Precipitation (CM)")
 ```
 
 ## Average Temperature Grouped by Severity
@@ -275,45 +360,13 @@ grouped_temp <- accidents |>
   summarise(Avg = mean(Temperature_C)) |>
   collect()
 
-# Create Scatter Plot
+# Visualize with Spark
 grouped_temp |>
-  ggplot(aes(x = Severity, y = Avg)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
   theme_minimal() +
-  labs(title = "Average Temperature Grouped by Severity", x = "Severity", y = "Average Temperature (C)")
-```
-
-## Average Visibility Grouped by Severity
-
-```{r}
-grouped_visibility <- accidents |>
-  group_by(Severity) |>
-  summarise(Avg = mean(Visibility_Mi)) |>
-  collect()
-
-# Create Scatter Plot
-grouped_visibility |>
-  ggplot(aes(x = Severity, y = Avg)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
-  theme_minimal() +
-  # scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
-  labs(title = "Average Visibility Grouped by Severity", x = "Severity", y = "Visibility (mi)")
-```
-
-## Average Wind Speed Grouped by Severity
-
-```{r}
-grouped_wind_speed <- accidents |>
-  group_by(Severity) |>
-  summarise(Avg = mean(Wind_Speed_Mph)) |>
-  collect()
-
-# Create Scatter Plot
-grouped_wind_speed |>
-  ggplot(aes(x = Severity, y = Avg)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
-  theme_minimal() +
-  labs(title = "Average Wind Speed Grouped by Severity", x = "Severity", y = "Wind_Speed (MPH)")
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Temperature Grouped by Severity", x = "Severity", y = "Temperature (C)")
 ```
 
 ## Distribution by Temperature during the accidents
@@ -330,20 +383,6 @@ grouped_temp |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
   labs(title = "Distribution of Accident's Temperature")
-```
-
-```{r}
-grouped_wind <- accidents |>
-  group_by(Wind_Speed_Mph) |>
-  summarise(Count = n()) |>
-  collect()
-
-# Visualize with Spark
-grouped_wind |> 
-  ggplot(aes(x = Wind_Speed_Mph, y = Count)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) + 
-  theme_minimal() +
-  labs(title = "Distribution of Accident's Wind Speed")
 ```
 
 ## Accidents by Day of Week (descending)
@@ -402,20 +441,20 @@ top_5_weather |>
   theme_minimal() + 
   labs(title = "Top 5 Weather Conditions for Severe Accidents")
 
-# Distribution of Visibility_Mi
+# Distribution of Visibility_Km
 grouped_vis <- severe_accidents |>
-  group_by(Visibility_Mi) |>
+  group_by(Visibility_Km) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_vis |> 
-  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  
-         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = Visibility_Mi, y = Count)) +
+  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  
+         Visibility_Km = reorder(Visibility_Km, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibility_Km, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
-  labs(title = "Distribution of Accidents by Visibility_Mi for Severe Accidents")
+  labs(title = "Distribution of Accidents by Visibility_Km for Severe Accidents")
 ```
 
 Distribution of variables are similar despite filtering for more severe accidents.
@@ -739,7 +778,7 @@ data.frame(crosstab_Severity_Wind_Direction_New) |>
   theme_minimal()
 ```
 
-## Summary statistics for Numerical Columns
+## Summary statistics for Numerical Columns in All Data
 
 ```{r}
 options(max.print = 100)
@@ -751,21 +790,6 @@ summary_stats <- accidents |>
   sdf_describe(cols = numerical_col_names_accidents)
 
 summary_stats
-```
-
-## Relationship between Severity and Distance_Mi
-
-```{r}
-# Relationship between Severity and Distance_Mi
-prop_data <- accidents |>
-  group_by(Distance_Mi, Severity) |>
-  summarize(n = n()) |>
-  group_by(Severity) |>
-  summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |>
-  mutate(se = sqrt(dis * (1-dis) / count)) |>
-  collect()
-
-prop_data
 ```
 
 ## Correlation Matrix for Numerical Values
@@ -791,20 +815,20 @@ There is little to no collinearity between predictors of accidents, aside from t
 ## Regrouping Data Severity
 
 ```{r}
-accidents <- accidents |>
+accidents_final <- accidents |>
   mutate(Is_Severe = case_when((Severity == 1) | (Severity == 2) ~ 0,
                                 (Severity == 3) | (Severity == 4) ~ 1
                                 )) |>
   # removing original Severity and Wind_Chill_C column
-  select(-c(Severity, Wind_Chill_C, Weather_Timestamp, Duration))
+  select(-c(Severity, Wind_Chill_C, Duration))
 
-glimpse(accidents)
+glimpse(accidents_final)
 ```
 
 ## Split Data for Training and Testing
 
 ```{r}
-accidents_split <- accidents |>
+accidents_split <- accidents_final |>
   sdf_random_split(training = 0.8, testing = 0.2, seed = seed_num)
 accidents_train <- accidents_split$training
 accidents_test <- accidents_split$testing
@@ -816,6 +840,20 @@ accidents_train |>
 accidents_test |>
   count(Is_Severe) |>
   mutate(prop = n / sum(n, na.rm = T))
+```
+
+## Summary statistics for Numerical Columns in Training Data
+
+```{r}
+options(max.print = 100)
+## getting columns that are numerical
+numerical_col_names_accidents <- accidents_train |>
+  select_if(is.numeric) |> colnames()
+
+summary_stats <- accidents_train |>
+  sdf_describe(cols = numerical_col_names_accidents)
+
+summary_stats
 ```
 
 ## Model Building
@@ -845,7 +883,7 @@ lr_fit |>
   )
 ```
 
-Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight and Weather_Condition_New from our features as they are statistically insignificant.
+Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight and Weather_Condition_New and Bump from our features as they are statistically insignificant.
 
 ### Pipeline, Logistic Regression
 
@@ -853,7 +891,7 @@ Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Tw
 
 ```{r}
 accidents_train_1 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump))
 
 numerical_col_names_accidents <- accidents_train_1 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
@@ -866,10 +904,9 @@ pipeline1 <- ml_pipeline(sc) |>
     input_cols = numerical_col_names_accidents, 
     output_col = "features"
   ) |>
-  ft_standard_scaler(
+  ft_robust_scaler(
     input_col = "features",
-    output_col = "stdz_features",
-    with_mean = TRUE
+    output_col = "stdz_features"
   ) |>
   ft_string_indexer(
     input_col = "DayOfWk",
@@ -910,7 +947,7 @@ cv1 <- ml_cross_validator(
     sc,
     label_col = "Is_Severe"
   ),
-  num_folds = 10,
+  num_folds = 50,
   parallelism = 7,
   seed = seed_num
 )
@@ -919,14 +956,14 @@ cv_model_1 <- ml_fit(cv1, dataset = accidents_train_1)
 
 ml_validation_metrics(cv_model_1) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.001
+# after running, best value of elastic_net_param is 0.00, best value of reg_param is 0.010
 ```
 
 #### MODEL 2
 
 ```{r}
 accidents_train_2 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, DayOfWk))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump, DayOfWk))
 
 numerical_col_names_accidents <- accidents_train_2 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
@@ -995,7 +1032,7 @@ ml_validation_metrics(cv_model_2) |>
 
 ```{r}
 accidents_train_3 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Wind_Direction_New))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump, Wind_Direction_New))
 
 numerical_col_names_accidents <- accidents_train_3 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
@@ -1075,7 +1112,7 @@ ml_save(cv_model_1$best_model, path = pipeline_model_path, overwrite = TRUE)
 model_load <- ml_load(sc, pipeline_model_path)
 
 accidents_test_1 <- accidents_test |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump))
 
 predictions <- ml_transform(model_load, accidents_test_1)
 
@@ -1099,7 +1136,7 @@ accuracy <- (TP+TN) / (TP+TN+FP+FN); accuracy
 
 ```{r}
 plumb(file = "spark-plumber.R") |>
-  pr_run(port = 8000)
+  pr_run(host = "0.0.0.0", port = 8000)
 ```
 
 # DISCONNECT

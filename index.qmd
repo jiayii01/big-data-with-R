@@ -4,7 +4,19 @@ title: "DSA306 Group Project: Group 7"
 
 # Project Introduction
 
-We chose this
+## Problem Statement
+
+In recent years, the escalating frequency of car accidents has become a critical concern for both public safety and economic stability. 
+
+According to the World Health Organization, road traffic injuries are a leading cause of death globally, with millions of lives lost and countless others suffering from varying degrees of injury and trauma each year. 
+
+We aim to better understand the factors that contribute to the severity of car accidents as we believe that it is paramount in creating safer traffic conditions for all.
+
+## Project Objectives
+
+This project aims to leverage the power of big data to develop a model for predicting the severity of car accidents. 
+
+By analyzing a comprehensive dataset comprising of a wide range of variables including weather conditions, presence of certain traffic management signs or items, date and time of accidents, we seek to uncover the underlying patterns and relationships that influence the severity of accidents.
 
 # Dataset Introduction
 
@@ -115,39 +127,124 @@ top_5_weather |>
 
 Most of the accidents seem to occur most when weather is fair, followed by cloudy weather. Thus, weather condition might not be a crucial factor in causing accidents.
 
-## Explore the distribution of Visibility_Mi
+## Explore the distribution of Visibility_Km
 
 ```{r}
 grouped_vis <- accidents |>
-  group_by(Visibility_Mi) |>
+  group_by(Visibility_Km) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_vis |> 
-  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  
-         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = Visibility_Mi, y = Count)) +
+  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  
+         Visibility_Km = reorder(Visibility_Km, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibility_Km, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
-  labs(title = "Distribution of Accidents by Visibility_Mi")
+  labs(title = "Distribution of Accidents by Visibility_Km")
 ```
 
 ## Average Distance Affected Grouped by Severity
 
 ```{r}
-grouped_distancemi <- accidents |>
+grouped_distance <- accidents |>
   group_by(Severity) |>
-  summarise(Avg = mean(Distance_Mi)) |>
+  summarise(Avg = mean(Distance_Km)) |>
   collect()
 
-# Create Scatter Plot
-grouped_distancemi |>
+# Visualize with Spark
+grouped_distance |>
   ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
   geom_col() +
   theme_minimal() +
   scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
-  labs(title = "Average Distance Grouped by Severity", x = "Severity", y = "Average Distance (mi)")
+  labs(title = "Average Distance Grouped by Severity", x = "Severity", y = "Average Distance (KM)")
+```
+
+## Average Humidity Grouped by Severity
+
+```{r}
+grouped_humidity <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Humidity)) |>
+  collect()
+
+# Visualize with Spark
+grouped_humidity |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Humidity Grouped by Severity", x = "Severity", y = "Humidity (%)")
+```
+
+## Average Pressure Grouped by Severity
+
+```{r}
+grouped_pressure <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Pressure_Cm)) |>
+  collect()
+
+# Visualize with Spark
+grouped_pressure |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Pressure Grouped by Severity", x = "Severity", y = "Pressure (CM)")
+```
+
+## Average Visibility Grouped by Severity
+
+```{r}
+grouped_visibility <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Visibility_Km)) |>
+  collect()
+
+# Visualize with Spark
+grouped_visibility |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Visibility Grouped by Severity", x = "Severity", y = "Visibility (KM)")
+```
+
+## Average Wind Speed Grouped by Severity
+
+```{r}
+grouped_wind_speed <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Wind_Speed_KmPH)) |>
+  collect()
+
+# Visualize with Spark
+grouped_wind_speed |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Wind Speed Grouped by Severity", x = "Severity", y = "Wind Speed (KmPH)")
+```
+
+## Average Precipitation Grouped by Severity
+
+```{r}
+grouped_precipitation <- accidents |>
+  group_by(Severity) |>
+  summarise(Avg = mean(Precipitation_Cm)) |>
+  collect()
+
+# Visualize with Spark
+grouped_precipitation |>
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
+  theme_minimal() +
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Precipitation Grouped by Severity", x = "Severity", y = "Precipitation (CM)")
 ```
 
 ## Average Temperature Grouped by Severity
@@ -158,45 +255,13 @@ grouped_temp <- accidents |>
   summarise(Avg = mean(Temperature_C)) |>
   collect()
 
-# Create Scatter Plot
+# Visualize with Spark
 grouped_temp |>
-  ggplot(aes(x = Severity, y = Avg)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
+  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +
+  geom_col() +
   theme_minimal() +
-  labs(title = "Average Temperature Grouped by Severity", x = "Severity", y = "Average Temperature (C)")
-```
-
-## Average Visibility Grouped by Severity
-
-```{r}
-grouped_visibility <- accidents |>
-  group_by(Severity) |>
-  summarise(Avg = mean(Visibility_Mi)) |>
-  collect()
-
-# Create Scatter Plot
-grouped_visibility |>
-  ggplot(aes(x = Severity, y = Avg)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
-  theme_minimal() +
-  # scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
-  labs(title = "Average Visibility Grouped by Severity", x = "Severity", y = "Visibility (mi)")
-```
-
-## Average Wind Speed Grouped by Severity
-
-```{r}
-grouped_wind_speed <- accidents |>
-  group_by(Severity) |>
-  summarise(Avg = mean(Wind_Speed_Mph)) |>
-  collect()
-
-# Create Scatter Plot
-grouped_wind_speed |>
-  ggplot(aes(x = Severity, y = Avg)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) +
-  theme_minimal() +
-  labs(title = "Average Wind Speed Grouped by Severity", x = "Severity", y = "Wind_Speed (MPH)")
+  scale_fill_discrete(name = "Severity", labels = c("Severe: 3 or 4", "Not Severe: 1 or 2")) + 
+  labs(title = "Average Temperature Grouped by Severity", x = "Severity", y = "Temperature (C)")
 ```
 
 ## Distribution by Temperature during the accidents
@@ -213,20 +278,6 @@ grouped_temp |>
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
   labs(title = "Distribution of Accident's Temperature")
-```
-
-```{r}
-grouped_wind <- accidents |>
-  group_by(Wind_Speed_Mph) |>
-  summarise(Count = n()) |>
-  collect()
-
-# Visualize with Spark
-grouped_wind |> 
-  ggplot(aes(x = Wind_Speed_Mph, y = Count)) +
-  geom_col(fill = "deepskyblue4", width = 0.5) + 
-  theme_minimal() +
-  labs(title = "Distribution of Accident's Wind Speed")
 ```
 
 ## Accidents by Day of Week (descending)
@@ -285,20 +336,20 @@ top_5_weather |>
   theme_minimal() + 
   labs(title = "Top 5 Weather Conditions for Severe Accidents")
 
-# Distribution of Visibility_Mi
+# Distribution of Visibility_Km
 grouped_vis <- severe_accidents |>
-  group_by(Visibility_Mi) |>
+  group_by(Visibility_Km) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
 grouped_vis |> 
-  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  
-         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |>  # Reorder in descending Count
-  ggplot(aes(x = Visibility_Mi, y = Count)) +
+  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  
+         Visibility_Km = reorder(Visibility_Km, desc(Count))) |>  # Reorder in descending Count
+  ggplot(aes(x = Visibility_Km, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
-  labs(title = "Distribution of Accidents by Visibility_Mi for Severe Accidents")
+  labs(title = "Distribution of Accidents by Visibility_Km for Severe Accidents")
 ```
 
 Distribution of variables are similar despite filtering for more severe accidents.
@@ -622,7 +673,7 @@ data.frame(crosstab_Severity_Wind_Direction_New) |>
   theme_minimal()
 ```
 
-## Summary statistics for Numerical Columns
+## Summary statistics for Numerical Columns in All Data
 
 ```{r}
 options(max.print = 100)
@@ -636,25 +687,9 @@ summary_stats <- accidents |>
 summary_stats
 ```
 
-## Relationship between Severity and Distance_Mi
-
-```{r}
-# Relationship between Severity and Distance_Mi
-prop_data <- accidents |>
-  group_by(Distance_Mi, Severity) |>
-  summarize(n = n()) |>
-  group_by(Severity) |>
-  summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |>
-  mutate(se = sqrt(dis * (1-dis) / count)) |>
-  collect()
-
-prop_data
-```
-
 ## Correlation Matrix for Numerical Values
 
 ```{r}
-#| echo: false
 ## getting columns that are numerical
 numerical_cols_accidents <- accidents |>
   select_if(is.numeric)
