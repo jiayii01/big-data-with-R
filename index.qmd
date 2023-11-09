@@ -20,10 +20,59 @@ By analyzing a comprehensive dataset comprising of a wide range of variables inc
 
 # Dataset Introduction
 
-## 
+| \#  |       Attribute       | Description                                                                                                                                                                                                                     | Nullable |
+|:---:|:-----------------:|:-------------------------------------|:---------:|
+|  1  |          ID           | This is a unique identifier of the accident record.                                                                                                                                                                             |    No    |
+|  2  |       Severity        | Shows the severity of the accident, a number between 1 and 4, where 1 indicates the least impact on traffic (i.e., short delay as a result of the accident) and 4 indicates a significant impact on traffic (i.e., long delay). |    No    |
+|  3  |      Start_Time       | Shows start time of the accident in local time zone.                                                                                                                                                                            |    No    |
+|  4  |       End_Time        | Shows end time of the accident in local time zone. End time here refers to when the impact of accident on traffic flow was dismissed.                                                                                           |    No    |
+|  5  |       Start_Lat       | Shows latitude in GPS coordinate of the start point.                                                                                                                                                                            |    No    |
+|  6  |       Start_Lng       | Shows longitude in GPS coordinate of the start point.                                                                                                                                                                           |    No    |
+|  7  |        End_Lat        | Shows latitude in GPS coordinate of the end point.                                                                                                                                                                              |   Yes    |
+|  8  |        End_Lng        | Shows longitude in GPS coordinate of the end point.                                                                                                                                                                             |   Yes    |
+|  9  |     Distance(mi)      | The length of the road extent affected by the accident.                                                                                                                                                                         |    No    |
+| 10  |      Description      | Shows natural language description of the accident.                                                                                                                                                                             |    No    |
+| 11  |        Number         | Shows the street number in address field.                                                                                                                                                                                       |   Yes    |
+| 12  |        Street         | Shows the street name in address field.                                                                                                                                                                                         |   Yes    |
+| 13  |         Side          | Shows the relative side of the street (Right/Left) in address field.                                                                                                                                                            |   Yes    |
+| 14  |         City          | Shows the city in address field.                                                                                                                                                                                                |   Yes    |
+| 15  |        County         | Shows the county in address field.                                                                                                                                                                                              |   Yes    |
+| 16  |         State         | Shows the state in address field.                                                                                                                                                                                               |   Yes    |
+| 17  |        Zipcode        | Shows the zipcode in address field.                                                                                                                                                                                             |   Yes    |
+| 18  |        Country        | Shows the country in address field.                                                                                                                                                                                             |   Yes    |
+| 19  |       Timezone        | Shows timezone based on the location of the accident (eastern, central, etc.).                                                                                                                                                  |   Yes    |
+| 20  |     Airport_Code      | Denotes an airport-based weather station which is the closest one to location of the accident.                                                                                                                                  |   Yes    |
+| 21  |   Weather_Timestamp   | Shows the time-stamp of weather observation record (in local time).                                                                                                                                                             |   Yes    |
+| 22  |    Temperature(F)     | Shows the temperature (in Fahrenheit).                                                                                                                                                                                          |   Yes    |
+| 23  |     Wind_Chill(F)     | Shows the wind chill (in Fahrenheit).                                                                                                                                                                                           |   Yes    |
+| 24  |      Humidity(%)      | Shows the humidity (in percentage).                                                                                                                                                                                             |   Yes    |
+| 25  |     Pressure(in)      | Shows the air pressure (in inches).                                                                                                                                                                                             |   Yes    |
+| 26  |    Visibility(mi)     | Shows visibility (in miles).                                                                                                                                                                                                    |   Yes    |
+| 27  |    Wind_Direction     | Shows wind direction.                                                                                                                                                                                                           |   Yes    |
+| 28  |    Wind_Speed(mph)    | Shows wind speed (in miles per hour).                                                                                                                                                                                           |   Yes    |
+| 29  |   Precipitation(in)   | Shows precipitation amount in inches, if there is any.                                                                                                                                                                          |   Yes    |
+| 30  |   Weather_Condition   | Shows the weather condition (rain, snow, thunderstorm, fog, etc.)                                                                                                                                                               |   Yes    |
+| 31  |        Amenity        | A [POI](https://wiki.openstreetmap.org/wiki/Points_of_interest) annotation which indicates presence of [amenity](https://wiki.openstreetmap.org/wiki/Key:amenity) in a nearby location.                                         |    No    |
+| 32  |         Bump          | A POI annotation which indicates presence of speed bump or hump in a nearby location.                                                                                                                                           |    No    |
+| 33  |       Crossing        | A POI annotation which indicates presence of [crossing](https://wiki.openstreetmap.org/wiki/Key:crossing) in a nearby location.                                                                                                 |    No    |
+| 34  |       Give_Way        | A POI annotation which indicates presence of [give_way](https://wiki.openstreetmap.org/wiki/Tag:highway%3Dgive_way) in a nearby location.                                                                                       |    No    |
+| 35  |       Junction        | A POI annotation which indicates presence of [junction](https://wiki.openstreetmap.org/wiki/Key:junction) in a nearby location.                                                                                                 |    No    |
+| 36  |        No_Exit        | A POI annotation which indicates presence of [no_exit](https://wiki.openstreetmap.org/wiki/Key:noexit) in a nearby location.                                                                                                    |    No    |
+| 37  |        Railway        | A POI annotation which indicates presence of [railway](https://wiki.openstreetmap.org/wiki/Key:railway) in a nearby location.                                                                                                   |    No    |
+| 38  |      Roundabout       | A POI annotation which indicates presence of [roundabout](https://wiki.openstreetmap.org/wiki/Tag:junction%3Droundabout) in a nearby location.                                                                                  |    No    |
+| 39  |        Station        | A POI annotation which indicates presence of [station](https://wiki.openstreetmap.org/wiki/Key:station) in a nearby location.                                                                                                   |    No    |
+| 40  |         Stop          | A POI annotation which indicates presence of [stop](https://wiki.openstreetmap.org/wiki/Key:stop) in a nearby location.                                                                                                         |    No    |
+| 41  |    Traffic_Calming    | A POI annotation which indicates presence of [traffic_calming](https://wiki.openstreetmap.org/wiki/Key:traffic_calming) in a nearby location.                                                                                   |    No    |
+| 42  |    Traffic_Signal     | A POI annotation which indicates presence of [traffic_signal](https://wiki.openstreetmap.org/wiki/Tag:highway%3Dtraffic_signals) in a nearby loction.                                                                           |    No    |
+| 43  |     Turning_Loop      | A POI annotation which indicates presence of [turning_loop](https://wiki.openstreetmap.org/wiki/Tag:highway%3Dturning_loop) in a nearby location.                                                                               |    No    |
+| 44  |    Sunrise_Sunset     | Shows the period of day (i.e. day or night) based on sunrise/sunset.                                                                                                                                                            |   Yes    |
+| 45  |    Civil_Twilight     | Shows the period of day (i.e. day or night) based on [civil twilight](https://en.wikipedia.org/wiki/Twilight#Civil_twilight).                                                                                                   |   Yes    |
+| 46  |   Nautical_Twilight   | Shows the period of day (i.e. day or night) based on [nautical twilight](https://en.wikipedia.org/wiki/Twilight#Nautical_twilight).                                                                                             |   Yes    |
+| 47  | Astronomical_Twilight | Shows the period of day (i.e. day or night) based on [astronomical twilight](https://en.wikipedia.org/wiki/Twilight#Astronomical_twilight).                                                                                     |   Yes    |
 
 ```{r}
 #| output: false
+#| echo: false
 library(dplyr)
 library(arrow)
 library(tidyverse)
@@ -41,6 +90,7 @@ sc <- spark_connect(master = "local", version = "3.4.0")
 ## Load accidents data in parquet format
 
 ```{r}
+#| code-fold: true
 # Reading Parquet
 accidents <- spark_read_parquet(sc, path = "data/us_accidents")
 glimpse(accidents)
@@ -49,6 +99,7 @@ glimpse(accidents)
 ## Distribution of Severity
 
 ```{r}
+#| code-fold: true
 grouped_severity <- accidents |>
   group_by(Severity) |>
   summarise(Count = n()) |>
@@ -69,6 +120,7 @@ Majority of the accidents are of Severity 2.
 ## Number of Accidents by Time of Day
 
 ```{r}
+#| code-fold: true
 grouped_tod <- accidents |>
   group_by(TimeOfDay) |>
   summarise(Count = n()) |>
@@ -89,6 +141,7 @@ Surprisingly there are more accidents in the Afternoon, followed by the Morning.
 ## Distribution of Accidents by StartHr
 
 ```{r}
+#| code-fold: true
 grouped_startHr <- accidents |>
   group_by(StartHr) |>
   summarise(Count = n()) |>
@@ -109,6 +162,7 @@ We can see that most of the accidents start around 3-5 p.m. in the afternoon. Su
 ## Top 5 Weather Conditions
 
 ```{r}
+#| code-fold: true
 top_5_weather <- accidents |>
   group_by(Weather_Condition_New) |>
   summarise(Count = n()) |>
@@ -130,6 +184,7 @@ Most of the accidents seem to occur most when weather is fair, followed by cloud
 ## Explore the distribution of Visibility_Km
 
 ```{r}
+#| code-fold: true
 grouped_vis <- accidents |>
   group_by(Visibility_Km) |>
   summarise(Count = n()) |>
@@ -148,6 +203,7 @@ grouped_vis |>
 ## Average Distance Affected Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_distance <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Distance_Km)) |>
@@ -165,6 +221,7 @@ grouped_distance |>
 ## Average Humidity Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_humidity <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Humidity)) |>
@@ -182,6 +239,7 @@ grouped_humidity |>
 ## Average Pressure Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_pressure <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Pressure_Cm)) |>
@@ -199,6 +257,7 @@ grouped_pressure |>
 ## Average Visibility Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_visibility <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Visibility_Km)) |>
@@ -216,6 +275,7 @@ grouped_visibility |>
 ## Average Wind Speed Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_wind_speed <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Wind_Speed_KmPH)) |>
@@ -233,6 +293,7 @@ grouped_wind_speed |>
 ## Average Precipitation Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_precipitation <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Precipitation_Cm)) |>
@@ -250,6 +311,7 @@ grouped_precipitation |>
 ## Average Temperature Grouped by Severity
 
 ```{r}
+#| code-fold: true
 grouped_temp <- accidents |>
   group_by(Severity) |>
   summarise(Avg = mean(Temperature_C)) |>
@@ -267,13 +329,14 @@ grouped_temp |>
 ## Distribution by Temperature during the accidents
 
 ```{r}
-grouped_temp <- accidents |>
+#| code-fold: true
+dist_temp <- accidents |>
   group_by(Temperature_C) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
-grouped_temp |> 
+dist_temp |> 
   ggplot(aes(x = Temperature_C, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
@@ -283,6 +346,7 @@ grouped_temp |>
 ## Accidents by Day of Week (descending)
 
 ```{r}
+#| code-fold: true
 grouped_DayOfWk <- accidents |>
   group_by(DayOfWk) |>
   summarise(Count = n()) |>
@@ -304,6 +368,7 @@ Most of the accidents seem to be happening during the weekdays, with fewest acci
 ## Exploring the more severe accidents
 
 ```{r}
+#| code-fold: true
 severe_accidents <- accidents |>
   filter(Severity > 2)
 
@@ -354,9 +419,10 @@ grouped_vis |>
 
 Distribution of variables are similar despite filtering for more severe accidents.
 
-## Crosstab of Weekday and Time of Day
+## Crosstab of Day of Week and Time of Day
 
 ```{r}
+#| code-fold: true
 # Crosstab with DayOfWk and TimeOfDay
 crosstab_Day_Time <- accidents |>
   sdf_crosstab("DayOfWk", "TimeOfDay")
@@ -364,7 +430,10 @@ crosstab_Day_Time <- accidents |>
 crosstab_Day_Time
 ```
 
+## Crosstab of Day of Week and Weather Condition
+
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Weather_Condition_New
 crosstab_Severity_Weather <- accidents |>
   sdf_crosstab("DayOfWk", "Weather_Condition_New")
@@ -375,6 +444,7 @@ crosstab_Severity_Weather
 ## Crosstab of Severity and Sunrise_Sunset
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Sunrise_Sunset
 crosstab_Severity_Sunrise_Sunset <- accidents |>
   sdf_crosstab("Severity", "Sunrise_Sunset")
@@ -394,6 +464,7 @@ data.frame(crosstab_Severity_Sunrise_Sunset) |>
 ## Crosstab of Severity and Amenity
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Amenity
 crosstab_Severity_Amenity <- accidents |>
   sdf_crosstab("Severity", "Amenity")
@@ -413,6 +484,7 @@ data.frame(crosstab_Severity_Amenity) |>
 ## Crosstab of Severity and Bump
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Bump
 crosstab_Severity_Bump <- accidents |>
   sdf_crosstab("Severity", "Bump")
@@ -432,6 +504,7 @@ data.frame(crosstab_Severity_Bump) |>
 ## Crosstab of Severity and Crossing
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Crossing
 crosstab_Severity_Crossing <- accidents |>
   sdf_crosstab("Severity", "Crossing")
@@ -451,6 +524,7 @@ data.frame(crosstab_Severity_Crossing) |>
 ## Crosstab of Severity and Give_Way
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Give_Way
 crosstab_Severity_Give_Way <- accidents |>
   sdf_crosstab("Severity", "Give_Way")
@@ -470,6 +544,7 @@ data.frame(crosstab_Severity_Give_Way) |>
 ## Crosstab of Severity and Junction
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Junction
 crosstab_Severity_Junction <- accidents |>
   sdf_crosstab("Severity", "Junction")
@@ -489,6 +564,7 @@ data.frame(crosstab_Severity_Junction) |>
 ## Crosstab of Severity and No_Exit
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and No_Exit
 crosstab_Severity_No_Exit <- accidents |>
   sdf_crosstab("Severity", "No_Exit")
@@ -508,6 +584,7 @@ data.frame(crosstab_Severity_No_Exit) |>
 ## Crosstab of Severity and Railway
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Railway
 crosstab_Severity_Railway <- accidents |>
   sdf_crosstab("Severity", "Railway")
@@ -527,6 +604,7 @@ data.frame(crosstab_Severity_Railway) |>
 ## Crosstab of Severity and Station
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Station
 crosstab_Severity_Station <- accidents |>
   sdf_crosstab("Severity", "Station")
@@ -546,6 +624,7 @@ data.frame(crosstab_Severity_Station) |>
 ## Crosstab of Severity and Stop
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Stop
 crosstab_Severity_Stop <- accidents |>
   sdf_crosstab("Severity", "Stop")
@@ -565,6 +644,7 @@ data.frame(crosstab_Severity_Stop) |>
 ## Crosstab of Severity and Traffic_Calming
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Traffic_Calming
 crosstab_Severity_Traffic_Calming <- accidents |>
   sdf_crosstab("Severity", "Traffic_Calming")
@@ -584,6 +664,7 @@ data.frame(crosstab_Severity_Traffic_Calming) |>
 ## Crosstab of Severity and Traffic_Signal
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Traffic_Signal
 crosstab_Severity_Traffic_Signal <- accidents |>
   sdf_crosstab("Severity", "Traffic_Signal")
@@ -603,6 +684,7 @@ data.frame(crosstab_Severity_Traffic_Signal) |>
 ## Crosstab of Severity and Sunrise_Sunset
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Sunrise_Sunset
 crosstab_Severity_Sunrise_Sunset <- accidents |>
   sdf_crosstab("Severity", "Sunrise_Sunset")
@@ -621,6 +703,7 @@ data.frame(crosstab_Severity_Sunrise_Sunset) |>
 ## Crosstab of Severity and TimeOfDay
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and TimeOfDay
 crosstab_Severity_TimeOfDay <- accidents |>
   sdf_crosstab("Severity", "TimeOfDay")
@@ -639,6 +722,7 @@ data.frame(crosstab_Severity_TimeOfDay) |>
 ## Crosstab of Severity and DayOfWk
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and DayOfWk
 crosstab_Severity_DayOfWk <- accidents |>
   sdf_crosstab("Severity", "DayOfWk")
@@ -658,6 +742,7 @@ data.frame(crosstab_Severity_DayOfWk) |>
 ## Crosstab of Severity and Wind_Direction_New
 
 ```{r}
+#| code-fold: true
 # Crosstab with Severity and Wind_Direction_New
 crosstab_Severity_Wind_Direction_New <- accidents |>
   sdf_crosstab("Severity", "Wind_Direction_New")
@@ -676,6 +761,7 @@ data.frame(crosstab_Severity_Wind_Direction_New) |>
 ## Summary statistics for Numerical Columns in All Data
 
 ```{r}
+#| code-fold: true
 options(max.print = 100)
 ## getting columns that are numerical
 numerical_col_names_accidents <- accidents |>
@@ -690,6 +776,7 @@ summary_stats
 ## Correlation Matrix for Numerical Values
 
 ```{r}
+#| code-fold: true
 ## getting columns that are numerical
 numerical_cols_accidents <- accidents |>
   select_if(is.numeric)

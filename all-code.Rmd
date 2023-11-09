@@ -372,13 +372,13 @@ grouped_temp |>
 ## Distribution by Temperature during the accidents
 
 ```{r}
-grouped_temp <- accidents |>
+dist_temp <- accidents |>
   group_by(Temperature_C) |>
   summarise(Count = n()) |>
   collect()
 
 # Visualize with Spark
-grouped_temp |> 
+dist_temp |> 
   ggplot(aes(x = Temperature_C, y = Count)) +
   geom_col(fill = "deepskyblue4", width = 0.5) + 
   theme_minimal() +
@@ -459,7 +459,7 @@ grouped_vis |>
 
 Distribution of variables are similar despite filtering for more severe accidents.
 
-## Crosstab of Weekday and Time of Day
+## Crosstab of Day of Week and Time of Day
 
 ```{r}
 # Crosstab with DayOfWk and TimeOfDay
@@ -468,6 +468,8 @@ crosstab_Day_Time <- accidents |>
 
 crosstab_Day_Time
 ```
+
+## Crosstab of Day of Week and Weather Condition
 
 ```{r}
 # Crosstab with Severity and Weather_Condition_New
@@ -1109,6 +1111,8 @@ ml_save(cv_model_1$best_model, path = pipeline_model_path, overwrite = TRUE)
 ## Load Best PipelineModel
 
 ```{r}
+pipeline_model_path <- "accidents_spark_model"
+
 model_load <- ml_load(sc, pipeline_model_path)
 
 accidents_test_1 <- accidents_test |>
