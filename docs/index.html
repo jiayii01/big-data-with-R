@@ -597,6 +597,8 @@ $ Wind_Direction_New    &lt;chr&gt; "N", "CALM", "VAR", "W", "S", "E", "CALM", "
 <section id="number-of-accidents-by-time-of-day" class="level2">
 <h2 class="anchored" data-anchor-id="number-of-accidents-by-time-of-day">Number of Accidents by Time of Day</h2>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>grouped_tod <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(TimeOfDay) <span class="sc">|&gt;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
@@ -610,6 +612,7 @@ $ Wind_Direction_New    &lt;chr&gt; "N", "CALM", "VAR", "W", "S", "E", "CALM", "
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"deepskyblue4"</span>, <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Accidents by Time of Day"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>

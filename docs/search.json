@@ -81,7 +81,7 @@
     "href": "index.html#number-of-accidents-by-time-of-day",
     "title": "DSA306 Group Project: Group 7",
     "section": "Number of Accidents by Time of Day",
-    "text": "Number of Accidents by Time of Day\n\ngrouped_tod &lt;- accidents |&gt;\n  group_by(TimeOfDay) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_tod |&gt; \n  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  \n         TimeOfDay = reorder(TimeOfDay, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = TimeOfDay, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Accidents by Time of Day\")\n\n\n\n\nSurprisingly there are more accidents in the Afternoon, followed by the Morning."
+    "text": "Number of Accidents by Time of Day\n\n\nCode\ngrouped_tod &lt;- accidents |&gt;\n  group_by(TimeOfDay) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_tod |&gt; \n  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  \n         TimeOfDay = reorder(TimeOfDay, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = TimeOfDay, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Accidents by Time of Day\")\n\n\n\n\n\nSurprisingly there are more accidents in the Afternoon, followed by the Morning."
   },
   {
     "objectID": "index.html#distribution-of-accidents-by-starthr",
