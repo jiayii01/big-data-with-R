@@ -8,7 +8,7 @@ plumb(file = "spark-plumber.R") |>
   pr_run(host = "0.0.0.0", port = 8000)
 ```
 
-2. Start a New R Session
+2. Start a New R Session <br>
 Running the API and running the Shiny application must be done on separate R sessions
 
 3. Run Shiny Application (app.R)
