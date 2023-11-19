@@ -1,7 +1,7 @@
 # DSA306 Group Project: Modelling on US Car Accidents
 
 ## How to run our Shiny application
-1. Run Lines 1241-1244 in code file <b>all-code.Rmd</b>
+1. Run Lines 1218-1221 in code file <b>all-code.Rmd</b>
 These lines of code expose our saved classification model as a web service at Port 8000.
 ```R
 plumb(file = "spark-plumber.R") |>
