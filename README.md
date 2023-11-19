@@ -15,4 +15,5 @@ Running the API and running the Shiny application must be done on separate R ses
 ![image](https://github.com/jiayii01/dsa306-project-group-7/assets/79521323/c7f351cf-4ef1-42cf-ac6a-aa1d1281697a)
 
 4. Shiny Application is ready for predictions!
-![image](https://github.com/jiayii01/dsa306-project-group-7/assets/79521323/eaddb384-9f84-4d25-b4df-aecc66d2d307)
+![image](https://github.com/jiayii01/dsa306-project-group-7/assets/79521323/134d7cd3-f354-4302-a377-57a19a469a96)
+
