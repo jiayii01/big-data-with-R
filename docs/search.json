@@ -7,60 +7,18 @@
     "text": "In recent years, the escalating frequency of car accidents has become a critical concern for both public safety and economic stability. \nAccording to the World Health Organization, road traffic injuries are a leading cause of death globally, with millions of lives lost and countless others suffering from varying degrees of injury and trauma each year. \nWe aim to better understand the factors that contribute to the severity of car accidents as we believe that it is paramount in creating safer traffic conditions for all.\n\n\n\nThis project aims to leverage the power of big data to develop a model for predicting the severity of car accidents. \nBy analyzing a comprehensive dataset comprising of a wide range of variables including weather conditions, presence of certain traffic management signs or items, date and time of accidents, we seek to uncover the underlying patterns and relationships that influence the severity of accidents."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
-    "objectID": "index.html#importing-packages",
-    "href": "index.html#importing-packages",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "IMPORTING PACKAGES",
-    "text": "IMPORTING PACKAGES\n\nlibrary(dplyr)\nlibrary(arrow)\nlibrary(tidyverse)\nlibrary(sparklyr)\nlibrary(dbplot)\nlibrary(corrr)\nlibrary(plotly)\nlibrary(ROSE)\nseed_num &lt;- 1234\nsc &lt;- spark_connect(master = \"local\", version = \"3.4.0\")"
-  },
-  {
-    "objectID": "index.html#eda",
-    "href": "index.html#eda",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "EDA",
-    "text": "EDA\n\nLoad accidents data in parquet format\n\n# reading accidents data already made available in parquet data format\naccidents &lt;- spark_read_parquet(sc, path = \"data/us_accidents\")\nglimpse(accidents)\n\nRows: ??\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange\n\n\nColumns: 28\nDatabase: spark_connection\n$ Severity              &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, …\n$ State                 &lt;chr&gt; \"CA\", \"MD\", \"CA\", \"CA\", \"NY\", \"NY\", \"WI\", \"CO\", …\n$ Weather_Timestamp     &lt;dttm&gt; 2022-02-17 06:53:00, 2022-12-22 07:31:00, 2022-…\n$ Humidity              &lt;dbl&gt; 18, 96, 44, 19, 54, 74, 86, 74, 49, 75, 44, 49, …\n$ Pressure_In           &lt;dbl&gt; 29.35, 29.67, 29.91, 30.01, 29.96, 30.08, 29.01,…\n$ Visibility_Mi         &lt;dbl&gt; 10.0, 0.5, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 1…\n$ Wind_Speed_Mph        &lt;dbl&gt; 9, 0, 5, 7, 8, 5, 0, 8, 14, 8, 6, 10, 7, 16, 0, …\n$ Precipitation_In      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …\n$ Amenity               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Bump                  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Crossing              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Give_Way              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Junction              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ No_Exit               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Railway               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Roundabout            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Station               &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Stop                  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Traffic_Calming       &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Traffic_Signal        &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…\n$ Sunrise_Sunset        &lt;chr&gt; \"Day\", \"Day\", \"Day\", \"Day\", \"Day\", \"Night\", \"Day…\n$ StartHr               &lt;int&gt; 6, 7, 8, 16, 19, 4, 7, 2, 14, 14, 19, 12, 16, 10…\n$ DayOfWk               &lt;chr&gt; \"Thu\", \"Thu\", \"Wed\", \"Thu\", \"Tue\", \"Sun\", \"Tue\",…\n$ Duration              &lt;drtn&gt; 10650 secs, 7098 secs, 4667 secs, 1230 secs, 78…\n$ Temperature_C         &lt;dbl&gt; 13.3, -1.1, 15.6, 18.3, 24.4, 9.4, 15.6, -8.9, 3…\n$ Wind_Chill_C          &lt;dbl&gt; 13.3, -1.1, 15.6, 18.3, 24.4, 8.3, 15.6, -15.0, …\n$ TimeOfDay             &lt;chr&gt; \"Morning\", \"Morning\", \"Morning\", \"Afternoon\", \"E…\n$ Weather_Condition_New &lt;chr&gt; \"Fair\", \"Snow\", \"Fair\", \"Fair\", \"Cloudy\", \"Fair\"…\n\n\n\n\nDistribution of accidents by State\n\n## Distribution of accidents by State\ngrouped_state &lt;- accidents |&gt;\n  group_by(State) |&gt;\n  summarise(Count = n()) |&gt;\n  mutate(Count = as.numeric(Count)) |&gt;\n  arrange(desc(Count)) |&gt;\n  head(10) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_state |&gt; \n  ggplot(aes(reorder(State, (Count)), Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) +\n  labs(title = \"Top 10 States with Most Accidents\") + \n  ylab(\"State\") +\n  coord_flip()"
-  },
-  {
-    "objectID": "model.html#importing-packages",
-    "href": "model.html#importing-packages",
-    "title": "Accidents Prediction",
-    "section": "IMPORTING PACKAGES",
-    "text": "IMPORTING PACKAGES\n\n\n\nDistance (Mi)\n\n\n\n\n\nHumidity\n\n\n\n\n\nPressure (In)\n\n\n\n\n\nVisibility (Mi)\n\n\n\n\n\nWind Speed (MPH)\n\n\n\n\n\nPrecipitation (In)\n\n\n\n\n\nStart Hour\n\n\n\n\n\nTemperature (C)\n\n\n\n\n\nAmenity\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nBump\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nCrossing\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nGive Way\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nJunction\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nNo Exit\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nRailway\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nStation\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nStop\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nTraffic Signal\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nSunrise_Sunset\n\n\n\n\nTRUE\n\n\n\n\n\nFALSE\n\n\n\n\n\n\n\nDay of Week\n\nMon\nTues\nWed\nThu\nFri\nSat\nSun\n\n\n\n\n\n\nTime of Day\n\nMorning\nAfternoon\nEvening\nNight\n\n\n\n\n\n\nWeather Condition\n\nFair\nCloudy\nHeavy Rain\nRainy\nWindy\nHeavy Snow\nSnow\nFog/Haze/Smoke/Mist\nFreezing Rain\nHail/Dust/Sand/Tornado\n\n\n\n\n\nSubmit\n\n\n\n\n\n\n\nStatus/Output"
-  },
-  {
-    "objectID": "model.html",
-    "href": "model.html",
-    "title": "Accidents Prediction",
-    "section": "",
-    "text": "# #| label: load-packages\n# #| include: false\n# library(shiny)\n# library(httr)\n# #| panel: sidebar\n# HTML(\"&lt;h3&gt;Input parameters&lt;/h4&gt;\")\n# sliderInput(\"Distance_Mi\", label = \"Distance (Mi)\", value = 1.04092843, min = 0.002, max = 336.570007)\n# sliderInput(\"Humidity\", label = \"Humidity\", value = 61.6816, min = 1.0, max = 100.0)\n# sliderInput(\"Pressure_In\", label = \"Pressure (In)\", value = 29.3758623, min = 0.0, max = 58.63)\n# sliderInput(\"Visibility_Mi\", label = \"Visibility (Mi)\", value = 9.1585846961, min = 0.0, max = 90.0)\n# sliderInput(\"Wind_Speed_Mph\", label = \"Wind Speed (MPH)\", value = 7.74101097781, min = 0.0, max = 190.0)\n# sliderInput(\"Precipitation_In\", label = \"Precipitation (In)\", value = 0.0054714150478, min = 0.0, max = 3.0)\n# sliderInput(\"StartHr\", label = \"Start Hour\", value = 13, min = 0, max = 23)\n# sliderInput(\"Temperature_C\", label = \"Temperature (C)\", value = 17.371791908, min = -42.8, max = 77.8)\n# \n# radioButtons(\"Amenity\", label=\"Amenity\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Bump\", label=\"Bump\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Crossing\", label=\"Crossing\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Give_Way\", label=\"Give Way\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Junction\", label=\"Junction\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"No_Exit\", label=\"No Exit\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Railway\", label=\"Railway\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Station\", label=\"Station\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Stop\", label=\"Stop\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Traffic_Signal\", label=\"Traffic Signal\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# radioButtons(\"Sunrise_Sunset\", label=\"Sunrise_Sunset\", choices = c(\"TRUE\" = TRUE, \"FALSE\" = FALSE))\n# \n# selectInput(\"DayOfWk\", label=\"Day of Week\", choices = c(\"Mon\", \"Tues\", \"Wed\", \"Thu\", \"Fri\", \"Sat\", \"Sun\"))\n# selectInput(\"TimeOfDay\", label=\"Time of Day\", choices = c(\"Morning\", \"Afternoon\", \"Evening\", \"Night\"))\n# selectInput(\"Weather_Condition_New\", label=\"Weather Condition\", choices = c(\"Fair\", \"Cloudy\", \"Heavy Rain\", \"Rainy\", \"Windy\", \"Heavy Snow\", \"Snow\", \"Fog/Haze/Smoke/Mist\", \"Freezing Rain\", \"Hail/Dust/Sand/Tornado\"))\n# \n# actionButton(\"submitbutton\", \"Submit\", class = \"btn btn-primary\")\n# #| panel: fill\n# tags$label(h3('Status/Output'))\n# verbatimTextOutput('contents')\n# h2(textOutput(\"output_text\"))\n# #| context: server\n# observeEvent(input$submitbutton, {\n# \n#     # Create a request body\n#     request_body &lt;- list(Distance_Mi = input$Distance_Mi,\n#                          Humidity = input$Humidity,\n#                          Pressure_In = input$Pressure_In,\n#                          Visibility_Mi = input$Visibility_Mi,\n#                          Wind_Speed_Mph = input$Wind_Speed_Mph,\n#                          Precipitation_In = input$Precipitation_In,\n#                          StartHr = input$StartHr,\n#                          Temperature_C = input$Temperature_C,\n#                          Amenity = input$Amenity,\n#                          Bump = input$Bump,\n#                          Crossing = input$Crossing,\n#                          Give_Way = input$Give_Way,\n#                          Junction = input$Junction,\n#                          No_Exit = input$No_Exit,\n#                          Railway = input$Railway,\n#                          Station = input$Station,\n#                          Stop = input$Stop,\n#                          Traffic_Signal = input$Traffic_Signal,\n#                          Sunrise_Sunset = input$Sunrise_Sunset,\n#                          DayOfWk = input$DayOfWk,\n#                          TimeOfDay = input$TimeOfDay,\n#                          Weather_Condition_New = input$Weather_Condition_New)\n# \n#     # Make POST request to the API\n#     response &lt;- POST(url = \"http://127.0.0.1:8000/predict\", body = request_body, encode = \"json\")\n# \n#     # Extract and display API response\n#     api_result &lt;- content(response, \"text\")\n#     output$output_text &lt;- renderText({\n#       if (input$submitbutton&gt;0) {\n#         ans &lt;- \"\"\n#         if (api_result == 0){\n#           ans &lt;- \"Not Severe\"\n#         } else{\n#           ans &lt;- \"Severe\"\n#         }\n#         paste(\"This accident is\", ans)\n#       }\n#     })\n# \n#     # Status/Output Text Box\n#   output$contents &lt;- renderPrint({\n#     if (input$submitbutton&gt;0) {\n#       isolate(\"Prediction complete.\")\n#     } else {\n#       return(\"Server is ready for prediction.\")\n#     }\n#   })\n# })"
-  },
-  {
-    "objectID": "test.html",
-    "href": "test.html",
-    "title": "Old Faithful",
-    "section": "",
-    "text": "Number of bins:"
-  },
-  {
-    "objectID": "index.html#project-introduction",
-    "href": "index.html#project-introduction",
+    "objectID": "index.html#problem-statement",
+    "href": "index.html#problem-statement",
     "title": "DSA306 Group Project: Group 7",
     "section": "",
-    "text": "We chose this"
+    "text": "In recent years, the escalating frequency of car accidents has become a critical concern for both public safety and economic stability. \nAccording to the World Health Organization, road traffic injuries are a leading cause of death globally, with millions of lives lost and countless others suffering from varying degrees of injury and trauma each year. \nWe aim to better understand the factors that contribute to the severity of car accidents as we believe that it is paramount in creating safer traffic conditions for all."
   },
   {
-    "objectID": "index.html#section",
-    "href": "index.html#section",
+    "objectID": "index.html#project-objectives",
+    "href": "index.html#project-objectives",
     "title": "DSA306 Group Project: Group 7",
     "section": "",
-    "text": "library(dplyr)\nlibrary(arrow)\nlibrary(tidyverse)\nlibrary(sparklyr)\nlibrary(dbplot)\nlibrary(corrr)\nlibrary(plotly)\nlibrary(ROSE)\nseed_num &lt;- 1234\nsc &lt;- spark_connect(master = \"local\", version = \"3.4.0\")"
+    "text": "This project aims to leverage the power of big data to develop a model for predicting the severity of car accidents. \nBy analyzing a comprehensive dataset comprising of a wide range of variables including weather conditions, presence of certain traffic management signs or items, date and time of accidents, we seek to uncover the underlying patterns and relationships that influence the severity of accidents."
   },
   {
     "objectID": "index.html#load-accidents-data-in-parquet-format",
@@ -98,11 +56,11 @@
     "text": "Top 5 Weather Conditions\n\n\nCode\ntop_5_weather &lt;- accidents |&gt;\n  group_by(Weather_Condition_New) |&gt;\n  summarise(Count = n()) |&gt;\n  slice_max(order_by = Count, n = 5, with_ties = FALSE) |&gt;\n  collect()\n\n# Visualize with Spark\ntop_5_weather |&gt; \n  mutate(Weather_Condition_New = as.factor(Weather_Condition_New),\n         Weather_Condition_New = reorder(Weather_Condition_New, desc(Count))) |&gt;\n  ggplot(aes(x = Weather_Condition_New, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Top 5 Weather Conditions\")\n\n\n\n\n\nMost of the accidents seem to occur most when weather is fair, followed by cloudy weather. Thus, weather condition might not be a crucial factor in causing accidents."
   },
   {
-    "objectID": "index.html#explore-the-distribution-of-visibility_mi",
-    "href": "index.html#explore-the-distribution-of-visibility_mi",
+    "objectID": "index.html#explore-the-distribution-of-visibility_km",
+    "href": "index.html#explore-the-distribution-of-visibility_km",
     "title": "DSA306 Group Project: Group 7",
-    "section": "Explore the distribution of Visibility_Mi",
-    "text": "Explore the distribution of Visibility_Mi\n\ngrouped_vis &lt;- accidents |&gt;\n  group_by(Visibility_Mi) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_vis |&gt; \n  mutate(Visibility_Mi = as.factor(Visibility_Mi), # Specify Visibility_Mi to be factor (categorical)  \n         Visibility_Mi = reorder(Visibility_Mi, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = Visibility_Mi, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Accidents by Visibility_Mi\")"
+    "section": "Explore the distribution of Visibility_Km",
+    "text": "Explore the distribution of Visibility_Km\n\n\nCode\ngrouped_vis &lt;- accidents |&gt;\n  group_by(Visibility_Km) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_vis |&gt; \n  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  \n         Visibility_Km = reorder(Visibility_Km, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = Visibility_Km, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Accidents by Visibility_Km\")"
   },
   {
     "objectID": "index.html#average-distance-affected-grouped-by-severity",
@@ -112,11 +70,18 @@
     "text": "Average Distance Affected Grouped by Severity\n\n\nCode\ngrouped_distance &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Distance_Km)) |&gt;\n  collect()\n\n\nWarning: Missing values are always removed in SQL aggregation functions.\nUse `na.rm = TRUE` to silence this warning\nThis warning is displayed once every 8 hours.\n\n\nCode\n# Visualize with Spark\ngrouped_distance |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Distance Grouped by Severity\", x = \"Severity\", y = \"Average Distance (KM)\")"
   },
   {
-    "objectID": "index.html#average-temperature-grouped-by-severity",
-    "href": "index.html#average-temperature-grouped-by-severity",
+    "objectID": "index.html#average-humidity-grouped-by-severity",
+    "href": "index.html#average-humidity-grouped-by-severity",
     "title": "DSA306 Group Project: Group 7",
-    "section": "Average Temperature Grouped by Severity",
-    "text": "Average Temperature Grouped by Severity\n\n\nCode\ngrouped_temp &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Temperature_C)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_temp |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Temperature Grouped by Severity\", x = \"Severity\", y = \"Temperature (C)\")"
+    "section": "Average Humidity Grouped by Severity",
+    "text": "Average Humidity Grouped by Severity\n\n\nCode\ngrouped_humidity &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Humidity)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_humidity |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Humidity Grouped by Severity\", x = \"Severity\", y = \"Humidity (%)\")"
+  },
+  {
+    "objectID": "index.html#average-pressure-grouped-by-severity",
+    "href": "index.html#average-pressure-grouped-by-severity",
+    "title": "DSA306 Group Project: Group 7",
+    "section": "Average Pressure Grouped by Severity",
+    "text": "Average Pressure Grouped by Severity\n\n\nCode\ngrouped_pressure &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Pressure_Cm)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_pressure |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Pressure Grouped by Severity\", x = \"Severity\", y = \"Pressure (CM)\")"
   },
   {
     "objectID": "index.html#average-visibility-grouped-by-severity",
@@ -131,6 +96,20 @@
     "title": "DSA306 Group Project: Group 7",
     "section": "Average Wind Speed Grouped by Severity",
     "text": "Average Wind Speed Grouped by Severity\n\n\nCode\ngrouped_wind_speed &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Wind_Speed_KmPH)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_wind_speed |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Wind Speed Grouped by Severity\", x = \"Severity\", y = \"Wind Speed (KmPH)\")"
+  },
+  {
+    "objectID": "index.html#average-precipitation-grouped-by-severity",
+    "href": "index.html#average-precipitation-grouped-by-severity",
+    "title": "DSA306 Group Project: Group 7",
+    "section": "Average Precipitation Grouped by Severity",
+    "text": "Average Precipitation Grouped by Severity\n\n\nCode\ngrouped_precipitation &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Precipitation_Cm)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_precipitation |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Precipitation Grouped by Severity\", x = \"Severity\", y = \"Precipitation (CM)\")"
+  },
+  {
+    "objectID": "index.html#average-temperature-grouped-by-severity",
+    "href": "index.html#average-temperature-grouped-by-severity",
+    "title": "DSA306 Group Project: Group 7",
+    "section": "Average Temperature Grouped by Severity",
+    "text": "Average Temperature Grouped by Severity\n\n\nCode\ngrouped_temp &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Temperature_C)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_temp |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Temperature Grouped by Severity\", x = \"Severity\", y = \"Temperature (C)\")"
   },
   {
     "objectID": "index.html#distribution-by-temperature-during-the-accidents",
@@ -154,18 +133,18 @@
     "text": "Exploring the more severe accidents\n\n\nCode\nsevere_accidents &lt;- accidents |&gt;\n  filter(Severity &gt; 2)\n\n# Time of day for severe accidents\ngrouped_tod &lt;- severe_accidents |&gt;\n  group_by(TimeOfDay) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\ngrouped_tod |&gt; \n  mutate(TimeOfDay = as.factor(TimeOfDay), # Specify TimeOfDay to be factor (categorical)  \n         TimeOfDay = reorder(TimeOfDay, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = TimeOfDay, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Severe Accidents by Time of Day\")\n\n\n\n\n\nCode\n# Weather conditions for severe accidents\ntop_5_weather &lt;- severe_accidents |&gt;\n  group_by(Weather_Condition_New) |&gt;\n  summarise(Count = n()) |&gt;\n  slice_max(order_by = Count, n = 5, with_ties = FALSE) |&gt;\n  collect()\n\ntop_5_weather |&gt; \n  mutate(Weather_Condition_New = as.factor(Weather_Condition_New),\n         Weather_Condition_New = reorder(Weather_Condition_New, desc(Count))) |&gt;\n  ggplot(aes(x = Weather_Condition_New, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() + \n  labs(title = \"Top 5 Weather Conditions for Severe Accidents\")\n\n\n\n\n\nCode\n# Distribution of Visibility_Km\ngrouped_vis &lt;- severe_accidents |&gt;\n  group_by(Visibility_Km) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_vis |&gt; \n  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  \n         Visibility_Km = reorder(Visibility_Km, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = Visibility_Km, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Accidents by Visibility_Km for Severe Accidents\")\n\n\n\n\n\nDistribution of variables are similar despite filtering for more severe accidents."
   },
   {
-    "objectID": "index.html#crosstab-of-weekday-and-time-of-day",
-    "href": "index.html#crosstab-of-weekday-and-time-of-day",
+    "objectID": "index.html#crosstab-of-day-of-week-and-time-of-day",
+    "href": "index.html#crosstab-of-day-of-week-and-time-of-day",
     "title": "DSA306 Group Project: Group 7",
-    "section": "Crosstab of Weekday and Time of Day",
-    "text": "Crosstab of Weekday and Time of Day\n\n# Crosstab with DayOfWk and TimeOfDay\ncrosstab_Day_Time &lt;- accidents |&gt;\n  sdf_crosstab(\"DayOfWk\", \"TimeOfDay\")\n\ncrosstab_Day_Time\n\n# Source: spark&lt;?&gt; [?? x 5]\n  DayOfWk_TimeOfDay Afternoon Evening Morning Night\n  &lt;chr&gt;                 &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;int&gt;\n1 Sun                   51573   20719   26754 35648\n2 Wed                  103406   26131   71994 28701\n3 Sat                   68712   25435   39872 41497\n4 Thu                  108767   26145   71092 30797\n5 Mon                   88084   22665   58349 26709\n6 Tue                  100384   25000   67175 26380\n7 Fri                  121952   32359   63156 35636\n\n\n\n# Crosstab with Severity and Weather_Condition_New\ncrosstab_Severity_Weather &lt;- accidents |&gt;\n  sdf_crosstab(\"DayOfWk\", \"Weather_Condition_New\")\n\ncrosstab_Severity_Weather\n\n# Source: spark&lt;?&gt; [?? x 10]\n  DayOfWk_Weather_Condition_New Cloudy   Fair `Fog/Haze/Smoke/Mist`\n  &lt;chr&gt;                          &lt;int&gt;  &lt;int&gt;                 &lt;int&gt;\n1 Wed                            84525 118981                  5064\n2 Sun                            46873  70274                  2125\n3 Sat                            64365  88982                  3952\n4 Thu                            86961 115472                  5422\n5 Mon                            73504  97802                  3266\n6 Tue                            81824 109608                  4373\n7 Fri                            89039 130438                  5222\n# ℹ 6 more variables: `Hail/Dust/Sand/Tornado` &lt;int&gt;, `Heavy Rain` &lt;int&gt;,\n#   `Heavy Snow` &lt;int&gt;, Rainy &lt;int&gt;, Snow &lt;int&gt;, Windy &lt;int&gt;"
+    "section": "Crosstab of Day of Week and Time of Day",
+    "text": "Crosstab of Day of Week and Time of Day\n\n\nCode\n# Crosstab with DayOfWk and TimeOfDay\ncrosstab_Day_Time &lt;- accidents |&gt;\n  sdf_crosstab(\"DayOfWk\", \"TimeOfDay\")\n\ncrosstab_Day_Time\n\n\n# Source: spark&lt;?&gt; [?? x 5]\n  DayOfWk_TimeOfDay Afternoon Evening Morning Night\n  &lt;chr&gt;                 &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;int&gt;\n1 Sun                   51573   20719   26754 35648\n2 Wed                  103406   26131   71994 28701\n3 Sat                   68712   25435   39872 41497\n4 Thu                  108767   26145   71092 30797\n5 Mon                   88084   22665   58349 26709\n6 Tue                  100384   25000   67175 26380\n7 Fri                  121952   32359   63156 35636"
   },
   {
-    "objectID": "index.html#crosstab-of-severity-and-sunrise_sunset",
-    "href": "index.html#crosstab-of-severity-and-sunrise_sunset",
+    "objectID": "index.html#crosstab-of-day-of-week-and-weather-condition",
+    "href": "index.html#crosstab-of-day-of-week-and-weather-condition",
     "title": "DSA306 Group Project: Group 7",
-    "section": "Crosstab of Severity and Sunrise_Sunset",
-    "text": "Crosstab of Severity and Sunrise_Sunset\n\n\nCode\n# Crosstab with Severity and Sunrise_Sunset\ncrosstab_Severity_Sunrise_Sunset &lt;- accidents |&gt;\n  sdf_crosstab(\"Severity\", \"Sunrise_Sunset\")\n\ndata.frame(crosstab_Severity_Sunrise_Sunset) |&gt;\n  gather(key=condition, value = count, Night, Day) |&gt;\n  group_by(Severity_Sunrise_Sunset) |&gt;\n  mutate(percentage = count / sum(count) * 100) |&gt;\n  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +\n  geom_bar(stat = \"identity\", position = \"stack\") +\n  geom_text(aes(label = paste0(round(percentage, 1), \"%\")), position = position_stack(vjust = 0.5)) +\n  labs(title = \"Severity x Sunrise_Sunset\", x = \"Severity\", y = \"Proportion\") +\n  scale_fill_manual(values = c(\"Night\" = \"#FF9999\", \"Day\" = \"99FF99\")) +\n  theme_minimal()\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange"
+    "section": "Crosstab of Day of Week and Weather Condition",
+    "text": "Crosstab of Day of Week and Weather Condition\n\n\nCode\n# Crosstab with Severity and Weather_Condition_New\ncrosstab_Severity_Weather &lt;- accidents |&gt;\n  sdf_crosstab(\"DayOfWk\", \"Weather_Condition_New\")\n\ncrosstab_Severity_Weather\n\n\n# Source: spark&lt;?&gt; [?? x 10]\n  DayOfWk_Weather_Condition_New Cloudy   Fair `Fog/Haze/Smoke/Mist`\n  &lt;chr&gt;                          &lt;int&gt;  &lt;int&gt;                 &lt;int&gt;\n1 Wed                            84525 118981                  5064\n2 Sun                            46873  70274                  2125\n3 Sat                            64365  88982                  3952\n4 Thu                            86961 115472                  5422\n5 Mon                            73504  97802                  3266\n6 Tue                            81824 109608                  4373\n7 Fri                            89039 130438                  5222\n# ℹ 6 more variables: `Hail/Dust/Sand/Tornado` &lt;int&gt;, `Heavy Rain` &lt;int&gt;,\n#   `Heavy Snow` &lt;int&gt;, Rainy &lt;int&gt;, Snow &lt;int&gt;, Windy &lt;int&gt;"
   },
   {
     "objectID": "index.html#crosstab-of-severity-and-amenity",
@@ -245,11 +224,11 @@
     "text": "Crosstab of Severity and Traffic_Signal\n\n\nCode\n# Crosstab with Severity and Traffic_Signal\ncrosstab_Severity_Traffic_Signal &lt;- accidents |&gt;\n  sdf_crosstab(\"Severity\", \"Traffic_Signal\")\n\ndata.frame(crosstab_Severity_Traffic_Signal) |&gt;\n  gather(key=condition, value = count, false, true) |&gt;\n  group_by(Severity_Traffic_Signal) |&gt;\n  mutate(percentage = count / sum(count) * 100) |&gt;\n  ggplot(aes(x=Severity_Traffic_Signal, y=percentage, fill=condition)) +\n  geom_bar(stat = \"identity\", position = \"stack\") +\n  geom_text(aes(label = paste0(round(percentage, 1), \"%\")), position = position_stack(vjust = 0.5)) +\n  labs(title = \"Severity x Traffic Signal\", x = \"Severity\", y = \"Proportion\") +\n  scale_fill_manual(values = c(\"false\" = \"#FF9999\", \"true\" = \"99FF99\")) +\n  theme_minimal()\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange"
   },
   {
-    "objectID": "index.html#crosstab-of-severity-and-sunrise_sunset-1",
-    "href": "index.html#crosstab-of-severity-and-sunrise_sunset-1",
+    "objectID": "index.html#crosstab-of-severity-and-sunrise_sunset",
+    "href": "index.html#crosstab-of-severity-and-sunrise_sunset",
     "title": "DSA306 Group Project: Group 7",
     "section": "Crosstab of Severity and Sunrise_Sunset",
-    "text": "Crosstab of Severity and Sunrise_Sunset\n\n\nCode\n# Crosstab with Severity and Sunrise_Sunset\ncrosstab_Severity_Sunrise_Sunset &lt;- accidents |&gt;\n  sdf_crosstab(\"Severity\", \"Sunrise_Sunset\")\n\ndata.frame(crosstab_Severity_Sunrise_Sunset) |&gt;\n  gather(key=condition, value = count, Night, Day) |&gt;\n  group_by(Severity_Sunrise_Sunset) |&gt;\n  mutate(percentage = count / sum(count) * 100) |&gt;\n  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +\n  geom_bar(stat = \"identity\", position = \"stack\") +\n  geom_text(aes(label = paste0(round(percentage, 1), \"%\")), position = position_stack(vjust = 0.5)) +\n  labs(title = \"Severity x Sunrise_Sunset\", x = \"Severity\", y = \"Proportion\") +\n  theme_minimal()\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange"
+    "text": "Crosstab of Severity and Sunrise_Sunset\n\n\nCode\n# Crosstab with Severity and Sunrise_Sunset\ncrosstab_Severity_Sunrise_Sunset &lt;- accidents |&gt;\n  sdf_crosstab(\"Severity\", \"Sunrise_Sunset\")\n\ndata.frame(crosstab_Severity_Sunrise_Sunset) |&gt;\n  gather(key=condition, value = count, Night, Day) |&gt;\n  group_by(Severity_Sunrise_Sunset) |&gt;\n  mutate(percentage = count / sum(count) * 100) |&gt;\n  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +\n  geom_bar(stat = \"identity\", position = \"stack\") +\n  geom_text(aes(label = paste0(round(percentage, 1), \"%\")), position = position_stack(vjust = 0.5)) +\n  labs(title = \"Severity x Sunrise_Sunset\", x = \"Severity\", y = \"Proportion\") +\n  scale_fill_manual(values = c(\"Day\" = \"#FDA174\", \"Night\" = \"#40E0D0\")) +\n  theme_minimal()\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange"
   },
   {
     "objectID": "index.html#crosstab-of-severity-and-timeofday",
@@ -273,62 +252,6 @@
     "text": "Crosstab of Severity and Wind_Direction_New\n\n\nCode\n# Crosstab with Severity and Wind_Direction_New\ncrosstab_Severity_Wind_Direction_New &lt;- accidents |&gt;\n  sdf_crosstab(\"Severity\", \"Wind_Direction_New\")\n\ndata.frame(crosstab_Severity_Wind_Direction_New) |&gt;\n  gather(key=condition, value = count, CALM, VAR, N, S, E, W) |&gt;\n  group_by(Severity_Wind_Direction_New) |&gt;\n  mutate(percentage = count / sum(count) * 100) |&gt;\n  ggplot(aes(x=Severity_Wind_Direction_New, y=percentage, fill=condition)) +\n  geom_bar(stat = \"identity\", position = \"stack\") +\n  geom_text(aes(label = paste0(round(percentage, 1), \"%\")), position = position_stack(vjust = 0.5)) +\n  labs(title = \"Severity x Wind_Direction_New\", x = \"Severity\", y = \"Proportion\") +\n  theme_minimal()\n\n\nWarning in arrow_collect(object, ...): NAs introduced by coercion to integer\nrange"
   },
   {
-    "objectID": "index.html#summary-statistics-for-numerical-columns",
-    "href": "index.html#summary-statistics-for-numerical-columns",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Summary statistics for Numerical Columns",
-    "text": "Summary statistics for Numerical Columns\n\noptions(max.print = 100)\n## getting columns that are numerical\nnumerical_col_names_accidents &lt;- accidents |&gt;\n  select_if(is.numeric) |&gt; colnames()\n\nsummary_stats &lt;- accidents |&gt;\n  sdf_describe(cols = numerical_col_names_accidents)\n\nsummary_stats\n\n# Source: spark&lt;?&gt; [?? x 11]\n  summary Severity Distance_Mi Humidity Pressure_In Visibility_Mi Wind_Speed_Mph\n  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;         &lt;chr&gt;         \n1 count   1445092  1445092     1445092  1445092     1445092       1445092       \n2 mean    2.05776… 1.04092881… 61.6815… 29.3758631… 9.1585872110… 7.74100195696…\n3 stddev  0.32980… 2.12004365… 22.8953… 1.13065030… 2.4015489506… 5.55272977307…\n4 min     1        0.002       1.0      0.0         0.0           0.0           \n5 max     4        336.570007… 100.0    58.63       90.0          190.0         \n# ℹ 4 more variables: Precipitation_In &lt;chr&gt;, StartHr &lt;chr&gt;,\n#   Temperature_C &lt;chr&gt;, Wind_Chill_C &lt;chr&gt;"
-  },
-  {
-    "objectID": "index.html#relationship-between-severity-and-distance_mi",
-    "href": "index.html#relationship-between-severity-and-distance_mi",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Relationship between Severity and Distance_Mi",
-    "text": "Relationship between Severity and Distance_Mi\n\n# Relationship between Severity and Distance_Mi\nprop_data &lt;- accidents |&gt;\n  group_by(Distance_Mi, Severity) |&gt;\n  summarize(n = n()) |&gt;\n  group_by(Severity) |&gt;\n  summarize(count = sum(n), dis = sum(Distance_Mi * n) / sum(n)) |&gt;\n  mutate(se = sqrt(dis * (1-dis) / count)) |&gt;\n  collect()\n\n`summarise()` has grouped output by \"Distance_Mi\". You can override using the\n`.groups` argument.\n`summarise()` has grouped output by \"Distance_Mi\". You can override using the\n`.groups` argument.\n`summarise()` has grouped output by \"Distance_Mi\". You can override using the\n`.groups` argument.\n\nprop_data\n\n# A tibble: 4 × 4\n  Severity   count   dis        se\n     &lt;int&gt;   &lt;int&gt; &lt;dbl&gt;     &lt;dbl&gt;\n1        3    8405 3.84  NaN      \n2        1    1158 1.58  NaN      \n3        2 1397418 1.03  NaN      \n4        4   38111 0.937   0.00124"
-  },
-  {
-    "objectID": "index.html#correlation-matrix",
-    "href": "index.html#correlation-matrix",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Correlation Matrix",
-    "text": "Correlation Matrix\n\n## getting columns that are numerical\nnumerical_cols_accidents &lt;- accidents |&gt;\n  select_if(is.numeric)\n\ncat_cols_accidents &lt;- accidents |&gt;\n  select_if(negate(is.numeric))\n\nnumerical_cols_accidents |&gt; \n  correlate(use = \"pairwise.complete.obs\", method = \"pearson\") |&gt;\n  shave(upper = TRUE) |&gt;\n  rplot()\n\nNew names:\nCorrelation method: 'pearson' Missing treated using: 'pairwise.complete.obs'\n• `` -&gt; `...1`\n• `` -&gt; `...2`\n• `` -&gt; `...3`\n• `` -&gt; `...4`\n• `` -&gt; `...5`\n• `` -&gt; `...6`\n• `` -&gt; `...7`\n• `` -&gt; `...8`\n• `` -&gt; `...9`\n• `` -&gt; `...10`\n\n\n\n\n\nThere is little to no collinearity between predictors of accidents, aside from the high correlation between Wind_Chill_C and Temperature_C. Thus, we will only be keeping the column Temperature_C as it is more robust and easier to understand, whilst providing sufficient information."
-  },
-  {
-    "objectID": "index.html#correlation-matrix-for-numerical-values",
-    "href": "index.html#correlation-matrix-for-numerical-values",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Correlation Matrix for Numerical Values",
-    "text": "Correlation Matrix for Numerical Values\n\n\nCode\n## getting columns that are numerical\nnumerical_cols_accidents &lt;- accidents |&gt;\n  select_if(is.numeric)\n\ncat_cols_accidents &lt;- accidents |&gt;\n  select_if(negate(is.numeric))\n\nnumerical_cols_accidents |&gt; \n  correlate(use = \"pairwise.complete.obs\", method = \"pearson\") |&gt;\n  shave(upper = TRUE) |&gt;\n  rplot()\n\n\nNew names:\nCorrelation method: 'pearson' Missing treated using: 'pairwise.complete.obs'\n• `` -&gt; `...1`\n• `` -&gt; `...2`\n• `` -&gt; `...3`\n• `` -&gt; `...4`\n• `` -&gt; `...5`\n• `` -&gt; `...6`\n• `` -&gt; `...7`\n• `` -&gt; `...8`\n• `` -&gt; `...9`\n• `` -&gt; `...10`\n\n\n\n\n\nThere is little to no collinearity between predictors of accidents, aside from the high correlation between Wind_Chill_C and Temperature_C. Thus, we will only be keeping the column Temperature_C as it is more robust and easier to understand, whilst providing sufficient information."
-  },
-  {
-    "objectID": "index.html#explore-the-distribution-of-visibility_km",
-    "href": "index.html#explore-the-distribution-of-visibility_km",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Explore the distribution of Visibility_Km",
-    "text": "Explore the distribution of Visibility_Km\n\n\nCode\ngrouped_vis &lt;- accidents |&gt;\n  group_by(Visibility_Km) |&gt;\n  summarise(Count = n()) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_vis |&gt; \n  mutate(Visibility_Km = as.factor(Visibility_Km), # Specify Visibility_Km to be factor (categorical)  \n         Visibility_Km = reorder(Visibility_Km, desc(Count))) |&gt;  # Reorder in descending Count\n  ggplot(aes(x = Visibility_Km, y = Count)) +\n  geom_col(fill = \"deepskyblue4\", width = 0.5) + \n  theme_minimal() +\n  labs(title = \"Distribution of Accidents by Visibility_Km\")"
-  },
-  {
-    "objectID": "index.html#average-humidity-grouped-by-severity",
-    "href": "index.html#average-humidity-grouped-by-severity",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Average Humidity Grouped by Severity",
-    "text": "Average Humidity Grouped by Severity\n\n\nCode\ngrouped_humidity &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Humidity)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_humidity |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Humidity Grouped by Severity\", x = \"Severity\", y = \"Humidity (%)\")"
-  },
-  {
-    "objectID": "index.html#average-pressure-grouped-by-severity",
-    "href": "index.html#average-pressure-grouped-by-severity",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Average Pressure Grouped by Severity",
-    "text": "Average Pressure Grouped by Severity\n\n\nCode\ngrouped_pressure &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Pressure_Cm)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_pressure |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Pressure Grouped by Severity\", x = \"Severity\", y = \"Pressure (CM)\")"
-  },
-  {
-    "objectID": "index.html#average-precipitation-grouped-by-severity",
-    "href": "index.html#average-precipitation-grouped-by-severity",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Average Precipitation Grouped by Severity",
-    "text": "Average Precipitation Grouped by Severity\n\n\nCode\ngrouped_precipitation &lt;- accidents |&gt;\n  group_by(Severity) |&gt;\n  summarise(Avg = mean(Precipitation_Cm)) |&gt;\n  collect()\n\n# Visualize with Spark\ngrouped_precipitation |&gt;\n  ggplot(aes(x = Severity, y = Avg, fill = !Severity %in% c(3, 4))) +\n  geom_col() +\n  theme_minimal() +\n  scale_fill_discrete(name = \"Severity\", labels = c(\"Severe: 3 or 4\", \"Not Severe: 1 or 2\")) + \n  labs(title = \"Average Precipitation Grouped by Severity\", x = \"Severity\", y = \"Precipitation (CM)\")"
-  },
-  {
     "objectID": "index.html#summary-statistics-for-numerical-columns-in-all-data",
     "href": "index.html#summary-statistics-for-numerical-columns-in-all-data",
     "title": "DSA306 Group Project: Group 7",
@@ -336,31 +259,10 @@
     "text": "Summary statistics for Numerical Columns in All Data\n\n\nCode\noptions(max.print = 100)\n## getting columns that are numerical\nnumerical_col_names_accidents &lt;- accidents |&gt;\n  select_if(is.numeric) |&gt; colnames()\n\nsummary_stats &lt;- accidents |&gt;\n  sdf_describe(cols = numerical_col_names_accidents)\n\nsummary_stats\n\n\n# Source: spark&lt;?&gt; [?? x 11]\n  summary Severity       Humidity StartHr Temperature_C Wind_Chill_C Distance_Km\n  &lt;chr&gt;   &lt;chr&gt;          &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;        &lt;chr&gt;      \n1 count   1445092        1445092  1445092 1445092       1445092      1445092    \n2 mean    2.05776033636… 61.6815… 13.001… 17.371864545… 16.66750624… 1.67485428…\n3 stddev  0.32980638569… 22.8953… 5.3277… 11.063205224… 12.41839297… 3.41115071…\n4 min     1              1.0      0       -42.78        -52.78       0.003      \n5 max     4              100.0    23      77.78         77.78        541.541    \n# ℹ 4 more variables: Pressure_Cm &lt;chr&gt;, Visibility_Km &lt;chr&gt;,\n#   Precipitation_Cm &lt;chr&gt;, Wind_Speed_KmPH &lt;chr&gt;"
   },
   {
-    "objectID": "index.html#problem-statement",
-    "href": "index.html#problem-statement",
+    "objectID": "index.html#correlation-matrix-for-numerical-values",
+    "href": "index.html#correlation-matrix-for-numerical-values",
     "title": "DSA306 Group Project: Group 7",
-    "section": "",
-    "text": "In recent years, the escalating frequency of car accidents has become a critical concern for both public safety and economic stability. \nAccording to the World Health Organization, road traffic injuries are a leading cause of death globally, with millions of lives lost and countless others suffering from varying degrees of injury and trauma each year. \nWe aim to better understand the factors that contribute to the severity of car accidents as we believe that it is paramount in creating safer traffic conditions for all."
-  },
-  {
-    "objectID": "index.html#project-objectives",
-    "href": "index.html#project-objectives",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "",
-    "text": "This project aims to leverage the power of big data to develop a model for predicting the severity of car accidents. \nBy analyzing a comprehensive dataset comprising of a wide range of variables including weather conditions, presence of certain traffic management signs or items, date and time of accidents, we seek to uncover the underlying patterns and relationships that influence the severity of accidents."
-  },
-  {
-    "objectID": "index.html#crosstab-of-day-of-week-and-time-of-day",
-    "href": "index.html#crosstab-of-day-of-week-and-time-of-day",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Crosstab of Day of Week and Time of Day",
-    "text": "Crosstab of Day of Week and Time of Day\n\n\nCode\n# Crosstab with DayOfWk and TimeOfDay\ncrosstab_Day_Time &lt;- accidents |&gt;\n  sdf_crosstab(\"DayOfWk\", \"TimeOfDay\")\n\ncrosstab_Day_Time\n\n\n# Source: spark&lt;?&gt; [?? x 5]\n  DayOfWk_TimeOfDay Afternoon Evening Morning Night\n  &lt;chr&gt;                 &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;int&gt;\n1 Sun                   51573   20719   26754 35648\n2 Wed                  103406   26131   71994 28701\n3 Sat                   68712   25435   39872 41497\n4 Thu                  108767   26145   71092 30797\n5 Mon                   88084   22665   58349 26709\n6 Tue                  100384   25000   67175 26380\n7 Fri                  121952   32359   63156 35636"
-  },
-  {
-    "objectID": "index.html#crosstab-of-day-of-week-and-weather-condition",
-    "href": "index.html#crosstab-of-day-of-week-and-weather-condition",
-    "title": "DSA306 Group Project: Group 7",
-    "section": "Crosstab of Day of Week and Weather Condition",
-    "text": "Crosstab of Day of Week and Weather Condition\n\n\nCode\n# Crosstab with Severity and Weather_Condition_New\ncrosstab_Severity_Weather &lt;- accidents |&gt;\n  sdf_crosstab(\"DayOfWk\", \"Weather_Condition_New\")\n\ncrosstab_Severity_Weather\n\n\n# Source: spark&lt;?&gt; [?? x 10]\n  DayOfWk_Weather_Condition_New Cloudy   Fair `Fog/Haze/Smoke/Mist`\n  &lt;chr&gt;                          &lt;int&gt;  &lt;int&gt;                 &lt;int&gt;\n1 Wed                            84525 118981                  5064\n2 Sun                            46873  70274                  2125\n3 Sat                            64365  88982                  3952\n4 Thu                            86961 115472                  5422\n5 Mon                            73504  97802                  3266\n6 Tue                            81824 109608                  4373\n7 Fri                            89039 130438                  5222\n# ℹ 6 more variables: `Hail/Dust/Sand/Tornado` &lt;int&gt;, `Heavy Rain` &lt;int&gt;,\n#   `Heavy Snow` &lt;int&gt;, Rainy &lt;int&gt;, Snow &lt;int&gt;, Windy &lt;int&gt;"
+    "section": "Correlation Matrix for Numerical Values",
+    "text": "Correlation Matrix for Numerical Values\n\n\nCode\n## getting columns that are numerical\nnumerical_cols_accidents &lt;- accidents |&gt;\n  select_if(is.numeric)\n\ncat_cols_accidents &lt;- accidents |&gt;\n  select_if(negate(is.numeric))\n\nnumerical_cols_accidents |&gt; \n  correlate(use = \"pairwise.complete.obs\", method = \"pearson\") |&gt;\n  shave(upper = TRUE) |&gt;\n  rplot()\n\n\nNew names:\nCorrelation method: 'pearson' Missing treated using: 'pairwise.complete.obs'\n• `` -&gt; `...1`\n• `` -&gt; `...2`\n• `` -&gt; `...3`\n• `` -&gt; `...4`\n• `` -&gt; `...5`\n• `` -&gt; `...6`\n• `` -&gt; `...7`\n• `` -&gt; `...8`\n• `` -&gt; `...9`\n• `` -&gt; `...10`\n\n\n\n\n\nThere is little to no collinearity between predictors of accidents, aside from the high correlation between Wind_Chill_C and Temperature_C. Thus, we will only be keeping the column Temperature_C as it is more robust and easier to understand, whilst providing sufficient information."
   }
 ]

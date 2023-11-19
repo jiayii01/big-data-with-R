@@ -3,7 +3,6 @@ project:
   output-dir: docs
   render:
     - index.qmd
-    - model.qmd
     
 website:
   title: "DSA306 Group Project - Group 7"

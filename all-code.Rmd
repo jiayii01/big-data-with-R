@@ -20,8 +20,10 @@ sc <- spark_connect(master = "local", version = "3.4.0")
 
 # DATA WRANGLING
 
+Portion of this code can only be run if the original Accidents dataset is downloaded from kaggle and placed in the 'data' folder. The cleaned dataset is provided as a Parquet file format in the 'data' folder.
+
 ```{r}
-csv_path = "../US_Accidents_March23.csv"
+csv_path = "data/US_Accidents_March23.csv"
 
 accidents <- spark_read_csv(
   sc, 
@@ -209,7 +211,7 @@ grouped_startHr |>
   labs(title = "Distribution of Accidents by StartHr")
 ```
 
-We can see that most of the accidents start around 3-5 p.m. in the afternoon. Surprisingly, very few accidents happen past midnight.
+We can see that most of the accidents start around 2 - 5 p.m. as well as the early morning, which is the rush-hour period. Surprisingly, very few accidents happen past midnight.
 
 ## Top 5 Weather Conditions
 
@@ -479,25 +481,6 @@ crosstab_Severity_Weather <- accidents |>
 crosstab_Severity_Weather
 ```
 
-## Crosstab of Severity and Sunrise_Sunset
-
-```{r}
-# Crosstab with Severity and Sunrise_Sunset
-crosstab_Severity_Sunrise_Sunset <- accidents |>
-  sdf_crosstab("Severity", "Sunrise_Sunset")
-
-data.frame(crosstab_Severity_Sunrise_Sunset) |>
-  gather(key=condition, value = count, Night, Day) |>
-  group_by(Severity_Sunrise_Sunset) |>
-  mutate(percentage = count / sum(count) * 100) |>
-  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +
-  geom_bar(stat = "identity", position = "stack") +
-  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
-  labs(title = "Severity x Sunrise_Sunset", x = "Severity", y = "Proportion") +
-  scale_fill_manual(values = c("Night" = "#FF9999", "Day" = "99FF99")) +
-  theme_minimal()
-```
-
 ## Crosstab of Severity and Amenity
 
 ```{r}
@@ -722,6 +705,7 @@ data.frame(crosstab_Severity_Sunrise_Sunset) |>
   geom_bar(stat = "identity", position = "stack") +
   geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
   labs(title = "Severity x Sunrise_Sunset", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("Day" = "#FDA174", "Night" = "#40E0D0")) +
   theme_minimal()
 ```
 
@@ -860,55 +844,38 @@ summary_stats
 
 ## Model Building
 
-### Removing features
+#### MODEL 1 (Base Model)
 
 ```{r}
-# Model with all features
-lr_fit <- accidents_train |>
-  ml_generalized_linear_regression(formula = Is_Severe ~ .,
-                                   family = "binomial") |>
-  tidy() |>
-  collect()
+accidents_train_1 <- accidents_train
 
-lr_fit |> 
-  ggplot(aes(x = term, y = estimate)) +
-  geom_point(size = 0.5) +
-  geom_errorbar(
-    aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error),
-    width = 0.1
-  ) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  coord_flip() +
-  labs(
-    title = "Confidence Intervals",
-    subtitle = "Parameter estimates with approximate 95% confidence intervals"
-  )
-```
-
-Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight and Weather_Condition_New and Bump from our features as they are statistically insignificant.
-
-### Pipeline, Logistic Regression
-
-#### MODEL 1
-
-```{r}
-accidents_train_1 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump))
-
-numerical_col_names_accidents <- accidents_train_1 |>
+numerical_col_names_accidents_1 <- accidents_train_1 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
-
-cat_col_names_accidents <- accidents_train_1 |>
-  select_if(negate(is.numeric)) |> colnames()
 
 pipeline1 <- ml_pipeline(sc) |>
   ft_vector_assembler(
-    input_cols = numerical_col_names_accidents, 
+    input_cols = numerical_col_names_accidents_1, 
     output_col = "features"
   ) |>
   ft_robust_scaler(
     input_col = "features",
     output_col = "stdz_features"
+  ) |>
+  ft_string_indexer(
+    input_col = "Sunrise_Sunset",
+    output_col = "Sunrise_Sunset_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "Civil_Twilight",
+    output_col = "Civil_Twilight_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "Nautical_Twilight",
+    output_col = "Nautical_Twilight_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "Astronomical_Twilight",
+    output_col = "Astronomical_Twilight_indexed"
   ) |>
   ft_string_indexer(
     input_col = "DayOfWk",
@@ -919,16 +886,20 @@ pipeline1 <- ml_pipeline(sc) |>
     output_col = "TimeOfDay_indexed"
   ) |>
   ft_string_indexer(
+    input_col = "Weather_Condition_New",
+    output_col = "Weather_Condition_New_indexed"
+  ) |>
+  ft_string_indexer(
     input_col = "Wind_Direction_New",
     output_col = "Wind_Direction_New_indexed"
   ) |>
   ft_one_hot_encoder(
-    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed", "Wind_Direction_New_indexed"),
-    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded")
+    input_cols = c("Sunrise_Sunset_indexed", "Civil_Twilight_indexed", "Nautical_Twilight_indexed", "Astronomical_Twilight_indexed", "DayOfWk_indexed", "TimeOfDay_indexed", "Weather_Condition_New_indexed", "Wind_Direction_New_indexed"),
+    output_cols = c("Sunrise_Sunset_encoded", "Civil_Twilight_encoded", "Nautical_Twilight_encoded", "Astronomical_Twilight_encoded", "DayOfWk_encoded", "TimeOfDay_encoded", "Weather_Condition_New_encoded", "Wind_Direction_New_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded"),
-    output_col = "final_features" 
+    input_cols = c("stdz_features", "Amenity", "Bump", "Crossing", "Give_Way", "Junction", "No_Exit", "Railway", "Roundabout", "Station", "Stop", "Traffic_Calming", "Traffic_Signal", "Sunrise_Sunset_encoded", "Civil_Twilight_encoded", "Nautical_Twilight_encoded", "Astronomical_Twilight_encoded", "DayOfWk_encoded", "TimeOfDay_encoded", "Weather_Condition_New_encoded", "Wind_Direction_New_encoded"),
+    output_col = "final_features"
   ) |>
   ml_logistic_regression(
     max_iter = 1000,
@@ -958,30 +929,66 @@ cv_model_1 <- ml_fit(cv1, dataset = accidents_train_1)
 
 ml_validation_metrics(cv_model_1) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.00, best value of reg_param is 0.010
 ```
+
+### Removing features
+
+```{r}
+# Confidence Interval
+lr_fit <- accidents_train |>
+  ml_generalized_linear_regression(formula = Is_Severe ~ .,
+                                   family = "binomial") |>
+  tidy() |>
+  collect()
+
+lr_fit |> 
+  ggplot(aes(x = term, y = estimate)) +
+  geom_point(size = 0.5) +
+  geom_errorbar(
+    aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error),
+    width = 0.1
+  ) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() +
+  labs(
+    title = "Confidence Intervals",
+    subtitle = "Parameter estimates with approximate 95% confidence intervals"
+  )
+```
+
+Using the graph, we have decided to remove Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight and Weather_Condition_New and Bump from our features as they are statistically insignificant.
+
+### Pipeline, Logistic Regression
 
 #### MODEL 2
 
 ```{r}
 accidents_train_2 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump, DayOfWk))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump))
 
-numerical_col_names_accidents <- accidents_train_2 |>
+numerical_col_names_accidents_2 <- accidents_train_2 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
 
-cat_col_names_accidents <- accidents_train_2 |>
-  select_if(negate(is.numeric)) |> colnames()
-
 pipeline2 <- ml_pipeline(sc) |>
-  ft_vector_assembler(
-    input_cols = numerical_col_names_accidents, 
+    ft_vector_assembler(
+    input_cols = numerical_col_names_accidents_2, 
     output_col = "features"
   ) |>
-  ft_standard_scaler(
+  ft_robust_scaler(
     input_col = "features",
-    output_col = "stdz_features",
-    with_mean = TRUE
+    output_col = "stdz_features"
+  ) |>
+  ft_string_indexer(
+    input_col = "Sunrise_Sunset",
+    output_col = "Sunrise_Sunset_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "Nautical_Twilight",
+    output_col = "Nautical_Twilight_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "DayOfWk",
+    output_col = "DayOfWk_indexed"
   ) |>
   ft_string_indexer(
     input_col = "TimeOfDay",
@@ -992,11 +999,11 @@ pipeline2 <- ml_pipeline(sc) |>
     output_col = "Wind_Direction_New_indexed"
   ) |>
   ft_one_hot_encoder(
-    input_cols = c("TimeOfDay_indexed", "Wind_Direction_New_indexed"),
-    output_cols = c("TimeOfDay_encoded", "Wind_Direction_New_encoded")
+    input_cols = c("Sunrise_Sunset_indexed", "Nautical_Twilight_indexed", "DayOfWk_indexed", "TimeOfDay_indexed", "Wind_Direction_New_indexed"),
+    output_cols = c("Sunrise_Sunset_encoded", "Nautical_Twilight_encoded", "DayOfWk_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "TimeOfDay_encoded", "Wind_Direction_New_encoded"),
+    input_cols = c("stdz_features", "Amenity", "Crossing", "Give_Way", "Junction", "No_Exit", "Railway", "Station", "Stop", "Traffic_Signal", "Sunrise_Sunset_encoded", "Nautical_Twilight_encoded", "DayOfWk_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded"),
     output_col = "final_features" 
   ) |>
   ml_logistic_regression(
@@ -1018,7 +1025,7 @@ cv2 <- ml_cross_validator(
     sc,
     label_col = "Is_Severe"
   ),
-  num_folds = 10,
+  num_folds = 50,
   parallelism = 7,
   seed = seed_num
 )
@@ -1027,45 +1034,48 @@ cv_model_2 <- ml_fit(cv2, dataset = accidents_train_2)
 
 ml_validation_metrics(cv_model_2) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.001
 ```
 
 #### MODEL 3
 
 ```{r}
 accidents_train_3 <- accidents_train |>
-  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump, Wind_Direction_New))
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump, DayOfWk))
 
-numerical_col_names_accidents <- accidents_train_3 |>
+numerical_col_names_accidents_3 <- accidents_train_3 |>
   select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
 
-cat_col_names_accidents <- accidents_train_3 |>
-  select_if(negate(is.numeric)) |> colnames()
-
 pipeline3 <- ml_pipeline(sc) |>
-  ft_vector_assembler(
-    input_cols = numerical_col_names_accidents, 
+    ft_vector_assembler(
+    input_cols = numerical_col_names_accidents_3, 
     output_col = "features"
   ) |>
-  ft_standard_scaler(
+  ft_robust_scaler(
     input_col = "features",
-    output_col = "stdz_features",
-    with_mean = TRUE
+    output_col = "stdz_features"
   ) |>
   ft_string_indexer(
-    input_col = "DayOfWk",
-    output_col = "DayOfWk_indexed"
+    input_col = "Sunrise_Sunset",
+    output_col = "Sunrise_Sunset_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "Nautical_Twilight",
+    output_col = "Nautical_Twilight_indexed"
   ) |>
   ft_string_indexer(
     input_col = "TimeOfDay",
     output_col = "TimeOfDay_indexed"
   ) |>
+  ft_string_indexer(
+    input_col = "Wind_Direction_New",
+    output_col = "Wind_Direction_New_indexed"
+  ) |>
   ft_one_hot_encoder(
-    input_cols = c("DayOfWk_indexed", "TimeOfDay_indexed"),
-    output_cols = c("DayOfWk_encoded", "TimeOfDay_encoded")
+    input_cols = c("Sunrise_Sunset_indexed", "Nautical_Twilight_indexed", "TimeOfDay_indexed", "Wind_Direction_New_indexed"),
+    output_cols = c("Sunrise_Sunset_encoded", "Nautical_Twilight_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded")
   ) |>
   ft_vector_assembler(
-    input_cols = c("stdz_features", "DayOfWk_encoded", "TimeOfDay_encoded"),
+    input_cols = c("stdz_features", "Amenity", "Crossing", "Give_Way", "Junction", "No_Exit", "Railway", "Station", "Stop", "Traffic_Signal", "Sunrise_Sunset_encoded", "Nautical_Twilight_encoded", "TimeOfDay_encoded", "Wind_Direction_New_encoded"),
     output_col = "final_features" 
   ) |>
   ml_logistic_regression(
@@ -1087,7 +1097,7 @@ cv3 <- ml_cross_validator(
     sc,
     label_col = "Is_Severe"
   ),
-  num_folds = 10,
+  num_folds = 50,
   parallelism = 7,
   seed = seed_num
 )
@@ -1096,7 +1106,78 @@ cv_model_3 <- ml_fit(cv3, dataset = accidents_train_3)
 
 ml_validation_metrics(cv_model_3) |>
   arrange(desc(areaUnderROC))
-# after running, best value of elastic_net_param is 0.25, best value of reg_param is 0.001
+```
+
+#### MODEL 4
+
+```{r}
+accidents_train_4 <- accidents_train |>
+  select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump, Wind_Direction_New))
+
+numerical_col_names_accidents_4 <- accidents_train_4 |>
+  select_if(is.numeric) |> select(-c(Is_Severe)) |> colnames()
+
+pipeline4 <- ml_pipeline(sc) |>
+    ft_vector_assembler(
+    input_cols = numerical_col_names_accidents_4, 
+    output_col = "features"
+  ) |>
+  ft_robust_scaler(
+    input_col = "features",
+    output_col = "stdz_features"
+  ) |>
+  ft_string_indexer(
+    input_col = "Sunrise_Sunset",
+    output_col = "Sunrise_Sunset_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "Nautical_Twilight",
+    output_col = "Nautical_Twilight_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "DayOfWk",
+    output_col = "DayOfWk_indexed"
+  ) |>
+  ft_string_indexer(
+    input_col = "TimeOfDay",
+    output_col = "TimeOfDay_indexed"
+  ) |>
+  ft_one_hot_encoder(
+    input_cols = c("Sunrise_Sunset_indexed", "Nautical_Twilight_indexed", "DayOfWk_indexed", "TimeOfDay_indexed"),
+    output_cols = c("Sunrise_Sunset_encoded", "Nautical_Twilight_encoded", "DayOfWk_encoded", "TimeOfDay_encoded")
+  ) |>
+  ft_vector_assembler(
+    input_cols = c("stdz_features", "Amenity", "Crossing", "Give_Way", "Junction", "No_Exit", "Railway", "Station", "Stop", "Traffic_Signal", "Sunrise_Sunset_encoded", "Nautical_Twilight_encoded", "DayOfWk_encoded", "TimeOfDay_encoded"),
+    output_col = "final_features" 
+  ) |>
+  ml_logistic_regression(
+    max_iter = 1000,
+    features_col = "final_features",
+    label_col = "Is_Severe"
+  )
+
+cv4 <- ml_cross_validator(
+  sc,
+  estimator = pipeline4,
+  estimator_param_maps = list(
+    logistic_regression = list(
+      elastic_net_param = c(0, 0.25, 0.5, 0.75, 1),
+      reg_param = c(0.001, 0.01, 0.1)
+    )
+  ),
+  evaluator = ml_binary_classification_evaluator(
+    sc,
+    label_col = "Is_Severe"
+  ),
+  num_folds = 50,
+  parallelism = 7,
+  seed = seed_num
+)
+
+cv_model_4 <- ml_fit(cv4, dataset = accidents_train_4)
+
+ml_validation_metrics(cv_model_4) |>
+  arrange(desc(areaUnderROC))
 ```
 
 ## Saving Best Model
@@ -1105,7 +1186,7 @@ ml_validation_metrics(cv_model_3) |>
 pipeline_model_path <- "accidents_spark_model"
 
 # Save PipelineModel to disk
-ml_save(cv_model_1$best_model, path = pipeline_model_path, overwrite = TRUE)
+ml_save(cv_model_2$best_model, path = pipeline_model_path, overwrite = TRUE)
 ```
 
 ## Load Best PipelineModel
@@ -1115,25 +1196,21 @@ pipeline_model_path <- "accidents_spark_model"
 
 model_load <- ml_load(sc, pipeline_model_path)
 
-accidents_test_1 <- accidents_test |>
+accidents_test_2 <- accidents_test |>
   select(-c(Traffic_Calming, Roundabout, Civil_Twilight, Astronomical_Twilight, Weather_Condition_New, Bump))
 
-predictions <- ml_transform(model_load, accidents_test_1)
+predictions <- ml_transform(model_load, accidents_test_2)
 
 confusion_matrix <- predictions |>
   count(Is_Severe, prediction) |> collect(); confusion_matrix
 
 TP <- confusion_matrix |> filter(Is_Severe == 1 & prediction == 1) |> pull(n)
 TN <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 0) |> pull(n)
-FP <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 1)
-if(dim(FP)[1] == 0){
-  FP <- 0
-} else{
-  FP <-  FP |> pull(n)
-}
+FP <- confusion_matrix |> filter(Is_Severe == 0 & prediction == 1) |> pull(n)
 FN <- confusion_matrix |> filter(Is_Severe == 1 & prediction == 0) |> pull(n)
 
 accuracy <- (TP+TN) / (TP+TN+FP+FN); accuracy
+# accuracy score: 0.9678418
 ```
 
 ## Deployment of API Endpoint

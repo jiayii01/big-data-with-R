@@ -21,7 +21,7 @@ By analyzing a comprehensive dataset comprising of a wide range of variables inc
 # Dataset Introduction
 
 | \#  |       Attribute       | Description                                                                                                                                                                                                                     | Nullable |
-|:---:|:-----------------:|:-------------------------------------|:---------:|
+|:---:|:-----------------:|:------------------------------------------------|:-------:|
 |  1  |          ID           | This is a unique identifier of the accident record.                                                                                                                                                                             |    No    |
 |  2  |       Severity        | Shows the severity of the accident, a number between 1 and 4, where 1 indicates the least impact on traffic (i.e., short delay as a result of the accident) and 4 indicates a significant impact on traffic (i.e., long delay). |    No    |
 |  3  |      Start_Time       | Shows start time of the accident in local time zone.                                                                                                                                                                            |    No    |
@@ -441,26 +441,6 @@ crosstab_Severity_Weather <- accidents |>
 crosstab_Severity_Weather
 ```
 
-## Crosstab of Severity and Sunrise_Sunset
-
-```{r}
-#| code-fold: true
-# Crosstab with Severity and Sunrise_Sunset
-crosstab_Severity_Sunrise_Sunset <- accidents |>
-  sdf_crosstab("Severity", "Sunrise_Sunset")
-
-data.frame(crosstab_Severity_Sunrise_Sunset) |>
-  gather(key=condition, value = count, Night, Day) |>
-  group_by(Severity_Sunrise_Sunset) |>
-  mutate(percentage = count / sum(count) * 100) |>
-  ggplot(aes(x=Severity_Sunrise_Sunset, y=percentage, fill=condition)) +
-  geom_bar(stat = "identity", position = "stack") +
-  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
-  labs(title = "Severity x Sunrise_Sunset", x = "Severity", y = "Proportion") +
-  scale_fill_manual(values = c("Night" = "#FF9999", "Day" = "99FF99")) +
-  theme_minimal()
-```
-
 ## Crosstab of Severity and Amenity
 
 ```{r}
@@ -697,6 +677,7 @@ data.frame(crosstab_Severity_Sunrise_Sunset) |>
   geom_bar(stat = "identity", position = "stack") +
   geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5)) +
   labs(title = "Severity x Sunrise_Sunset", x = "Severity", y = "Proportion") +
+  scale_fill_manual(values = c("Day" = "#FDA174", "Night" = "#40E0D0")) +
   theme_minimal()
 ```
 

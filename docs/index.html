@@ -161,7 +161,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#exploring-the-more-severe-accidents" id="toc-exploring-the-more-severe-accidents" class="nav-link" data-scroll-target="#exploring-the-more-severe-accidents">Exploring the more severe accidents</a></li>
   <li><a href="#crosstab-of-day-of-week-and-time-of-day" id="toc-crosstab-of-day-of-week-and-time-of-day" class="nav-link" data-scroll-target="#crosstab-of-day-of-week-and-time-of-day">Crosstab of Day of Week and Time of Day</a></li>
   <li><a href="#crosstab-of-day-of-week-and-weather-condition" id="toc-crosstab-of-day-of-week-and-weather-condition" class="nav-link" data-scroll-target="#crosstab-of-day-of-week-and-weather-condition">Crosstab of Day of Week and Weather Condition</a></li>
-  <li><a href="#crosstab-of-severity-and-sunrise_sunset" id="toc-crosstab-of-severity-and-sunrise_sunset" class="nav-link" data-scroll-target="#crosstab-of-severity-and-sunrise_sunset">Crosstab of Severity and Sunrise_Sunset</a></li>
   <li><a href="#crosstab-of-severity-and-amenity" id="toc-crosstab-of-severity-and-amenity" class="nav-link" data-scroll-target="#crosstab-of-severity-and-amenity">Crosstab of Severity and Amenity</a></li>
   <li><a href="#crosstab-of-severity-and-bump" id="toc-crosstab-of-severity-and-bump" class="nav-link" data-scroll-target="#crosstab-of-severity-and-bump">Crosstab of Severity and Bump</a></li>
   <li><a href="#crosstab-of-severity-and-crossing" id="toc-crosstab-of-severity-and-crossing" class="nav-link" data-scroll-target="#crosstab-of-severity-and-crossing">Crosstab of Severity and Crossing</a></li>
@@ -173,7 +172,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#crosstab-of-severity-and-stop" id="toc-crosstab-of-severity-and-stop" class="nav-link" data-scroll-target="#crosstab-of-severity-and-stop">Crosstab of Severity and Stop</a></li>
   <li><a href="#crosstab-of-severity-and-traffic_calming" id="toc-crosstab-of-severity-and-traffic_calming" class="nav-link" data-scroll-target="#crosstab-of-severity-and-traffic_calming">Crosstab of Severity and Traffic_Calming</a></li>
   <li><a href="#crosstab-of-severity-and-traffic_signal" id="toc-crosstab-of-severity-and-traffic_signal" class="nav-link" data-scroll-target="#crosstab-of-severity-and-traffic_signal">Crosstab of Severity and Traffic_Signal</a></li>
-  <li><a href="#crosstab-of-severity-and-sunrise_sunset-1" id="toc-crosstab-of-severity-and-sunrise_sunset-1" class="nav-link" data-scroll-target="#crosstab-of-severity-and-sunrise_sunset-1">Crosstab of Severity and Sunrise_Sunset</a></li>
+  <li><a href="#crosstab-of-severity-and-sunrise_sunset" id="toc-crosstab-of-severity-and-sunrise_sunset" class="nav-link" data-scroll-target="#crosstab-of-severity-and-sunrise_sunset">Crosstab of Severity and Sunrise_Sunset</a></li>
   <li><a href="#crosstab-of-severity-and-timeofday" id="toc-crosstab-of-severity-and-timeofday" class="nav-link" data-scroll-target="#crosstab-of-severity-and-timeofday">Crosstab of Severity and TimeOfDay</a></li>
   <li><a href="#crosstab-of-severity-and-dayofwk" id="toc-crosstab-of-severity-and-dayofwk" class="nav-link" data-scroll-target="#crosstab-of-severity-and-dayofwk">Crosstab of Severity and DayOfWk</a></li>
   <li><a href="#crosstab-of-severity-and-wind_direction_new" id="toc-crosstab-of-severity-and-wind_direction_new" class="nav-link" data-scroll-target="#crosstab-of-severity-and-wind_direction_new">Crosstab of Severity and Wind_Direction_New</a></li>
@@ -1030,24 +1029,24 @@ This warning is displayed once every 8 hours.</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-sunrise_sunset" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-sunrise_sunset">Crosstab of Severity and Sunrise_Sunset</h2>
+<section id="crosstab-of-severity-and-amenity" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-amenity">Crosstab of Severity and Amenity</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Sunrise_Sunset</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Sunrise_Sunset <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Sunrise_Sunset"</span>)</span>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Amenity</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Amenity <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Amenity"</span>)</span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Sunrise_Sunset) <span class="sc">|&gt;</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Night, Day) <span class="sc">|&gt;</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Sunrise_Sunset) <span class="sc">|&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Amenity) <span class="sc">|&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Amenity) <span class="sc">|&gt;</span></span>
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Sunrise_Sunset, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Amenity, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Sunrise_Sunset"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Night"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"Day"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Amenity"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
@@ -1059,23 +1058,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-amenity" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-amenity">Crosstab of Severity and Amenity</h2>
+<section id="crosstab-of-severity-and-bump" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-bump">Crosstab of Severity and Bump</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Amenity</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Amenity <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Amenity"</span>)</span>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Bump</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Bump <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Bump"</span>)</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Amenity) <span class="sc">|&gt;</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Bump) <span class="sc">|&gt;</span></span>
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Amenity) <span class="sc">|&gt;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Bump) <span class="sc">|&gt;</span></span>
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Amenity, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Bump, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Amenity"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Bump"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1088,23 +1087,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-bump" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-bump">Crosstab of Severity and Bump</h2>
+<section id="crosstab-of-severity-and-crossing" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-crossing">Crosstab of Severity and Crossing</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Bump</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Bump <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Bump"</span>)</span>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Crossing</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Crossing <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Crossing"</span>)</span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Bump) <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Crossing) <span class="sc">|&gt;</span></span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Bump) <span class="sc">|&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Crossing) <span class="sc">|&gt;</span></span>
 <span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Bump, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Crossing, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Bump"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Crossing"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1117,23 +1116,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-crossing" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-crossing">Crosstab of Severity and Crossing</h2>
+<section id="crosstab-of-severity-and-give_way" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-give_way">Crosstab of Severity and Give_Way</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Crossing</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Crossing <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Crossing"</span>)</span>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Give_Way</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Give_Way <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Give_Way"</span>)</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Crossing) <span class="sc">|&gt;</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Give_Way) <span class="sc">|&gt;</span></span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Crossing) <span class="sc">|&gt;</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Give_Way) <span class="sc">|&gt;</span></span>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Crossing, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Give_Way, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Crossing"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Give Way"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1146,23 +1145,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-give_way" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-give_way">Crosstab of Severity and Give_Way</h2>
+<section id="crosstab-of-severity-and-junction" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-junction">Crosstab of Severity and Junction</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Give_Way</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Give_Way <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Give_Way"</span>)</span>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Junction</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Junction <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Junction"</span>)</span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Give_Way) <span class="sc">|&gt;</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Junction) <span class="sc">|&gt;</span></span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Give_Way) <span class="sc">|&gt;</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Junction) <span class="sc">|&gt;</span></span>
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Give_Way, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Junction, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Give Way"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Junction"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1175,23 +1174,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-junction" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-junction">Crosstab of Severity and Junction</h2>
+<section id="crosstab-of-severity-and-no_exit" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-no_exit">Crosstab of Severity and No_Exit</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Junction</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Junction <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Junction"</span>)</span>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and No_Exit</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_No_Exit <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"No_Exit"</span>)</span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Junction) <span class="sc">|&gt;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_No_Exit) <span class="sc">|&gt;</span></span>
 <span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Junction) <span class="sc">|&gt;</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_No_Exit) <span class="sc">|&gt;</span></span>
 <span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Junction, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_No_Exit, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Junction"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x No_Exit"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1204,23 +1203,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-no_exit" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-no_exit">Crosstab of Severity and No_Exit</h2>
+<section id="crosstab-of-severity-and-railway" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-railway">Crosstab of Severity and Railway</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and No_Exit</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_No_Exit <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"No_Exit"</span>)</span>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Railway</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Railway <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Railway"</span>)</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_No_Exit) <span class="sc">|&gt;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Railway) <span class="sc">|&gt;</span></span>
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_No_Exit) <span class="sc">|&gt;</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Railway) <span class="sc">|&gt;</span></span>
 <span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_No_Exit, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Railway, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x No_Exit"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Railway"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1233,23 +1232,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-railway" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-railway">Crosstab of Severity and Railway</h2>
+<section id="crosstab-of-severity-and-station" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-station">Crosstab of Severity and Station</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Railway</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Railway <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Railway"</span>)</span>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Station</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Station <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Station"</span>)</span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Railway) <span class="sc">|&gt;</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Station) <span class="sc">|&gt;</span></span>
 <span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Railway) <span class="sc">|&gt;</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Station) <span class="sc">|&gt;</span></span>
 <span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Railway, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Station, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Railway"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Station"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1262,23 +1261,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-station" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-station">Crosstab of Severity and Station</h2>
+<section id="crosstab-of-severity-and-stop" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-stop">Crosstab of Severity and Stop</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Station</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Station <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Station"</span>)</span>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Stop</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Stop <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Stop"</span>)</span>
 <span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Station) <span class="sc">|&gt;</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Stop) <span class="sc">|&gt;</span></span>
 <span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Station) <span class="sc">|&gt;</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Stop) <span class="sc">|&gt;</span></span>
 <span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Station, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Stop, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Station"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Stop"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1291,23 +1290,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-stop" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-stop">Crosstab of Severity and Stop</h2>
+<section id="crosstab-of-severity-and-traffic_calming" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-traffic_calming">Crosstab of Severity and Traffic_Calming</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Stop</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Stop <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Stop"</span>)</span>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Traffic_Calming</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Traffic_Calming <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Traffic_Calming"</span>)</span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Stop) <span class="sc">|&gt;</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Traffic_Calming) <span class="sc">|&gt;</span></span>
 <span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Stop) <span class="sc">|&gt;</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Traffic_Calming) <span class="sc">|&gt;</span></span>
 <span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Stop, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Traffic_Calming, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Stop"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic Calming"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1320,23 +1319,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-traffic_calming" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-traffic_calming">Crosstab of Severity and Traffic_Calming</h2>
+<section id="crosstab-of-severity-and-traffic_signal" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-traffic_signal">Crosstab of Severity and Traffic_Signal</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Traffic_Calming</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Traffic_Calming <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Traffic_Calming"</span>)</span>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Traffic_Signal</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Traffic_Signal <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Traffic_Signal"</span>)</span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Traffic_Calming) <span class="sc">|&gt;</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Traffic_Signal) <span class="sc">|&gt;</span></span>
 <span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Traffic_Calming) <span class="sc">|&gt;</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Traffic_Signal) <span class="sc">|&gt;</span></span>
 <span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Traffic_Calming, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Traffic_Signal, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic Calming"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic Signal"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
 <span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1349,24 +1348,24 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-traffic_signal" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-traffic_signal">Crosstab of Severity and Traffic_Signal</h2>
+<section id="crosstab-of-severity-and-sunrise_sunset" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-sunrise_sunset">Crosstab of Severity and Sunrise_Sunset</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Traffic_Signal</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Traffic_Signal <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Traffic_Signal"</span>)</span>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Sunrise_Sunset</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Sunrise_Sunset <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Sunrise_Sunset"</span>)</span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Traffic_Signal) <span class="sc">|&gt;</span></span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, false, true) <span class="sc">|&gt;</span></span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Traffic_Signal) <span class="sc">|&gt;</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Sunrise_Sunset) <span class="sc">|&gt;</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Night, Day) <span class="sc">|&gt;</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Sunrise_Sunset) <span class="sc">|&gt;</span></span>
 <span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Traffic_Signal, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Sunrise_Sunset, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic Signal"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
-<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"false"</span> <span class="ot">=</span> <span class="st">"#FF9999"</span>, <span class="st">"true"</span> <span class="ot">=</span> <span class="st">"99FF99"</span>)) <span class="sc">+</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Sunrise_Sunset"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Day"</span> <span class="ot">=</span> <span class="st">"#FDA174"</span>, <span class="st">"Night"</span> <span class="ot">=</span> <span class="st">"#40E0D0"</span>)) <span class="sc">+</span></span>
 <span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
@@ -1378,23 +1377,23 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-sunrise_sunset-1" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-sunrise_sunset-1">Crosstab of Severity and Sunrise_Sunset</h2>
+<section id="crosstab-of-severity-and-timeofday" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-timeofday">Crosstab of Severity and TimeOfDay</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Sunrise_Sunset</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Sunrise_Sunset <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Sunrise_Sunset"</span>)</span>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and TimeOfDay</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_TimeOfDay <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"TimeOfDay"</span>)</span>
 <span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Sunrise_Sunset) <span class="sc">|&gt;</span></span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Night, Day) <span class="sc">|&gt;</span></span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Sunrise_Sunset) <span class="sc">|&gt;</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_TimeOfDay) <span class="sc">|&gt;</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Afternoon, Evening, Morning, Night) <span class="sc">|&gt;</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_TimeOfDay) <span class="sc">|&gt;</span></span>
 <span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Sunrise_Sunset, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_TimeOfDay, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Sunrise_Sunset"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic TimeOfDay"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
 <span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
@@ -1406,24 +1405,25 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-timeofday" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-timeofday">Crosstab of Severity and TimeOfDay</h2>
+<section id="crosstab-of-severity-and-dayofwk" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-dayofwk">Crosstab of Severity and DayOfWk</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and TimeOfDay</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_TimeOfDay <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"TimeOfDay"</span>)</span>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and DayOfWk</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_DayOfWk <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"DayOfWk"</span>)</span>
 <span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_TimeOfDay) <span class="sc">|&gt;</span></span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Afternoon, Evening, Morning, Night) <span class="sc">|&gt;</span></span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_TimeOfDay) <span class="sc">|&gt;</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_DayOfWk) <span class="sc">|&gt;</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Mon, Tue, Wed, Thu, Fri, Sat, Sun) <span class="sc">|&gt;</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_DayOfWk) <span class="sc">|&gt;</span></span>
 <span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_TimeOfDay, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_DayOfWk, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic TimeOfDay"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
-<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic DayOfWk"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +</span></span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in arrow_collect(object, ...): NAs introduced by coercion to integer
@@ -1434,25 +1434,24 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-dayofwk" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-dayofwk">Crosstab of Severity and DayOfWk</h2>
+<section id="crosstab-of-severity-and-wind_direction_new" class="level2">
+<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-wind_direction_new">Crosstab of Severity and Wind_Direction_New</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and DayOfWk</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_DayOfWk <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"DayOfWk"</span>)</span>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Wind_Direction_New</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Wind_Direction_New <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Wind_Direction_New"</span>)</span>
 <span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_DayOfWk) <span class="sc">|&gt;</span></span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, Mon, Tue, Wed, Thu, Fri, Sat, Sun) <span class="sc">|&gt;</span></span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_DayOfWk) <span class="sc">|&gt;</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Wind_Direction_New) <span class="sc">|&gt;</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, CALM, VAR, N, S, E, W) <span class="sc">|&gt;</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Wind_Direction_New) <span class="sc">|&gt;</span></span>
 <span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_DayOfWk, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Wind_Direction_New, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
 <span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Traffic DayOfWk"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
-<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># scale_fill_manual(values = c("false" = "#FF9999", "true" = "99FF99")) +</span></span>
-<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Wind_Direction_New"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in arrow_collect(object, ...): NAs introduced by coercion to integer
@@ -1463,48 +1462,20 @@ range</code></pre>
 </div>
 </div>
 </section>
-<section id="crosstab-of-severity-and-wind_direction_new" class="level2">
-<h2 class="anchored" data-anchor-id="crosstab-of-severity-and-wind_direction_new">Crosstab of Severity and Wind_Direction_New</h2>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crosstab with Severity and Wind_Direction_New</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>crosstab_Severity_Wind_Direction_New <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_crosstab</span>(<span class="st">"Severity"</span>, <span class="st">"Wind_Direction_New"</span>)</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(crosstab_Severity_Wind_Direction_New) <span class="sc">|&gt;</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span>condition, <span class="at">value =</span> count, CALM, VAR, N, S, E, W) <span class="sc">|&gt;</span></span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Severity_Wind_Direction_New) <span class="sc">|&gt;</span></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Severity_Wind_Direction_New, <span class="at">y=</span>percentage, <span class="at">fill=</span>condition)) <span class="sc">+</span></span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(percentage, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Severity x Wind_Direction_New"</span>, <span class="at">x =</span> <span class="st">"Severity"</span>, <span class="at">y =</span> <span class="st">"Proportion"</span>) <span class="sc">+</span></span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in arrow_collect(object, ...): NAs introduced by coercion to integer
-range</code></pre>
-</div>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
 <section id="summary-statistics-for-numerical-columns-in-all-data" class="level2">
 <h2 class="anchored" data-anchor-id="summary-statistics-for-numerical-columns-in-all-data">Summary statistics for Numerical Columns in All Data</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">max.print =</span> <span class="dv">100</span>)</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="do">## getting columns that are numerical</span></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>numerical_col_names_accidents <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span> <span class="fu">colnames</span>()</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>summary_stats <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_describe</span>(<span class="at">cols =</span> numerical_col_names_accidents)</span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>summary_stats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">max.print =</span> <span class="dv">100</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="do">## getting columns that are numerical</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>numerical_col_names_accidents <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span> <span class="fu">colnames</span>()</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>summary_stats <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sdf_describe</span>(<span class="at">cols =</span> numerical_col_names_accidents)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>summary_stats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source: spark&lt;?&gt; [?? x 11]
@@ -1525,17 +1496,17 @@ range</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="do">## getting columns that are numerical</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>numerical_cols_accidents <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric)</span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>cat_cols_accidents <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(<span class="fu">negate</span>(is.numeric))</span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>numerical_cols_accidents <span class="sc">|&gt;</span> </span>
-<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">correlate</span>(<span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shave</span>(<span class="at">upper =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="do">## getting columns that are numerical</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>numerical_cols_accidents <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric)</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>cat_cols_accidents <span class="ot">&lt;-</span> accidents <span class="sc">|&gt;</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(<span class="fu">negate</span>(is.numeric))</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>numerical_cols_accidents <span class="sc">|&gt;</span> </span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">correlate</span>(<span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shave</span>(<span class="at">upper =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>New names:
@@ -1552,7 +1523,7 @@ Correlation method: 'pearson' Missing treated using: 'pairwise.complete.obs'
 • `` -&gt; `...10`</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>There is little to no collinearity between predictors of accidents, aside from the high correlation between Wind_Chill_C and Temperature_C. Thus, we will only be keeping the column Temperature_C as it is more robust and easier to understand, whilst providing sufficient information.</p>

@@ -38,7 +38,7 @@ ui <- pageWithSidebar(
   ),
   
   mainPanel(
-    HTML("Please remember to run <b>Lines 1137-1140</b> in <b>all-code.rmd</b> to start a local server to get predictions from our trained classifier. <br>"), 
+    HTML("Please remember to run <b>Lines 1218-1221</b> in <b>all-code.rmd</b> to start a local server to get predictions from our trained classifier. <br>"), 
     tags$label(h3('Status/Output')), # Status/Output Text Box
     verbatimTextOutput('contents'),
     h2(textOutput("output_text"))
